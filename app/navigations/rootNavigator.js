@@ -3,11 +3,9 @@ import {NavigationContainer} from '@react-navigation/native';
 import AuthNavigator from "./authNavigator";
 
 function RootNavigator() {
-
-
     return (
         <NavigationContainer>
-<AuthNavigator/>
+            <AuthNavigator/>
         </NavigationContainer>
     );
 }

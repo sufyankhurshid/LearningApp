@@ -4,37 +4,45 @@ import {AppStyles, MetricsMod} from "../../../themes";
 export default styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: AppStyles.colorSet.bgGreen,
     },
     topContainer: {
-        height: '45%'
+        height: '28%',
     },
     textInput: {
+        justifyContent: 'center',
+        // alignItems: 'center',
         paddingHorizontal: MetricsMod.baseMargin,
         paddingVertical: MetricsMod.doubleBaseMargin
     },
-    forgetPassword: {
-        paddingHorizontal: MetricsMod.marginFifteen,
-    },
-    welcomeText: {
-        width: '50%',
+    orangeStyle: {
         position: 'absolute',
-        left: 17,
-        top: 100,
+        right: 0,
+        top: 0,
+        width: '45%',
+        height: '100%'
+    },
+    createAccount: {
+        width: '50%',
+        marginLeft: MetricsMod.marginFifteen,
+        marginTop: MetricsMod.ninety,
         fontWeight: 'bold',
         fontSize: AppStyles.fontSet.xmlarge,
         color: AppStyles.colorSet.white,
         lineHeight: MetricsMod.marginFortyFive
     },
-    orangeStyle: {
-        width: '75%',
-        height: '100%'
+    imageView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: MetricsMod.eighty
     },
-    greenStyle: {
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        width: '48%',
-        height: '90%'
+    userImage: {
+        width: MetricsMod.hundredFifty,
+        height: MetricsMod.hundredFifty,
+        borderRadius: MetricsMod.hundredFifty / 2,
+        borderColor: AppStyles.colorSet.white,
+        borderWidth: MetricsMod.smallMargin,
     },
     innerContainer: {
         flexDirection: 'row',
@@ -51,23 +59,4 @@ export default styles = StyleSheet.create({
         backgroundColor: AppStyles.colorSet.greyColor,
         borderRadius: MetricsMod.baseMargin
     },
-    footerContainer: {
-        height: '7%',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#FF7A30'
-    },
-    signUp: {
-        marginLeft: MetricsMod.smallMargin,
-        color: '#07635D',
-        fontWeight: 'bold',
-        fontSize: AppStyles.fontSet.normal
-    },
-    dontHave: {
-        color: AppStyles.colorSet.white,
-        fontWeight: 'bold',
-        fontSize: AppStyles.fontSet.smaller
-    }
-
 })
