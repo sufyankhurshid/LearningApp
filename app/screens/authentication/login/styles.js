@@ -56,11 +56,11 @@ export default styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#FF7A30'
+        backgroundColor: AppStyles.colorSet.bgOrange
     },
     signUp: {
         marginLeft: MetricsMod.smallMargin,
-        color: '#07635D',
+        color: AppStyles.colorSet.bgGreen,
         fontWeight: 'bold',
         fontSize: AppStyles.fontSet.normal
     },

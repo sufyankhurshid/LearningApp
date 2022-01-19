@@ -10,7 +10,7 @@ export default styles = StyleSheet.create({
     button: {
         width: '90%',
         backgroundColor: AppStyles.colorSet.bgGreen,
-        paddingVertical: MetricsMod.marginFifteen,
+        paddingVertical: MetricsMod.baseMargin,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: MetricsMod.baseMargin,
