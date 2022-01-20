@@ -1,13 +1,12 @@
 import React from 'react';
-import {SafeAreaView, Text,} from 'react-native';
+import RootNavigator from "./navigations/rootNavigator";
 
-
-const App= () => {
-  return (
-    <SafeAreaView>
-      <Text> App</Text>
-    </SafeAreaView>
-  );
+const App = () => {
+    return (
+        <>
+            <RootNavigator/>
+        </>
+    );
 };
 
 
