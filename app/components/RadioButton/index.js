@@ -1,7 +1,8 @@
 import React from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
-import {AppStyles, MetricsMod} from '../../themes';
 import PropTypes from 'prop-types';
+
+import {AppStyles, MetricsMod} from '../../themes';
 import VectorIconComponent from '../VectorIconComponent';
 import {ICON_TYPES} from '../../constants/constant';
 import styles from './styles';
@@ -11,7 +12,7 @@ function RadioButton(props) {
 
   const optionSelected = item => {
     const check = item.gender === selectedItem.gender;
-    return check ? 'checkbox-marked' : 'checkbox-blank-outline';
+    return check ? 'radiobox-marked' : 'radiobox-blank';
   };
 
   return (

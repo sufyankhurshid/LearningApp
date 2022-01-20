@@ -1,13 +1,15 @@
 import React from 'react';
-import RootNavigator from "./navigations/rootNavigator";
+import {Provider} from 'react-redux';
+
+import store from './redux/Store';
+import RootNavigator from './navigations/rootNavigator';
 
 const App = () => {
-    return (
-        <>
-            <RootNavigator/>
-        </>
-    );
+  return (
+    <Provider store={store}>
+      <RootNavigator />
+    </Provider>
+  );
 };
-
 
 export default App;

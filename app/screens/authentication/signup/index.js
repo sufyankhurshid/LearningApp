@@ -1,12 +1,6 @@
 import React, {useState} from 'react';
-import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Formik} from 'formik';
 
 import styles from './styles';
 import images from '../../../themes/Images';
@@ -18,16 +12,18 @@ import {MAIN_SCREEN} from '../../../constants/screens';
 import RadioButton from '../../../components/RadioButton';
 import * as ImagePicker from 'react-native-image-crop-picker';
 import {GENDER_LIST} from '../../../constants/constant';
-import TextInputMask from '../../../components/textInputMask';
+import SafeAreaView from 'react-native/Libraries/Components/SafeAreaView/SafeAreaView';
+import {SignupSchema} from './schema';
+import DatePicker from 'react-native-datepicker';
+import MaskInput from 'react-native-mask-input/src/MaskInput';
+import {boolean} from 'yup';
+import {useDispatch} from 'react-redux';
+import {userDetails} from '../../../redux/Action/user';
 
 function Signup(props) {
-  const [firstname, setFirstname] = React.useState('');
-  const [lastname, setLastname] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [confirmPassword, setConfirmPassword] = React.useState('');
   const [item, setItem] = useState({});
   const [profileImage, setProfileImage] = useState('');
+  const dispatch = useDispatch();
 
   const onPress = item => {
     setItem(item);
@@ -46,27 +42,23 @@ function Signup(props) {
     );
   };
 
-  const renderRadioContainer = () => {
-    return (
-      <View style={styles.radioContainer}>
-        <Text style={styles.title}>Gender</Text>
-        <RadioButton data={GENDER_LIST} selectedItem={item} onPress={onPress} />
-      </View>
-    );
-  };
-
-  const takePhotoFromLibrary = () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 400,
+  const takePhotoFromLibrary = async () => {
+    const image = await ImagePicker.openPicker({
+      width: MetricsMod.threeHundred,
+      height: MetricsMod.threeHundred,
       cropping: true,
-    }).then(image => {
-      console.log(image);
-      setProfileImage(image.path);
     });
+    setProfileImage({uri: image?.path});
   };
 
-  const renderFieldsContainer = () => {
+  const renderFieldsContainer = ({
+    handleChange,
+    handleBlur,
+    errors,
+    touched,
+    handleSubmit,
+    values,
+  }) => {
     return (
       <View style={styles.textInput}>
         <Image source={images.rightOrange} style={styles.orangeStyle} />
@@ -77,78 +69,170 @@ function Signup(props) {
           activeOpacity={0.3}
           onPress={takePhotoFromLibrary}>
           <Image
-            source={profileImage ? {uri: profileImage} : Images.addImage}
+            source={profileImage ? profileImage : Images.addImage}
             style={styles.userImage}
           />
         </TouchableOpacity>
 
         <CustomTextInput
           placeholder={'First name'}
-          onChange={setFirstname}
+          onChange={handleChange('firstname')}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
           placeholderTextColor={AppStyles.colorSet.white}
+          errors={errors?.firstname}
+          touched={touched?.firstname}
+          handleBlur={handleBlur('firstname')}
         />
 
         <CustomTextInput
           placeholder={'Last name'}
-          onChange={setLastname}
+          onChange={handleChange('lastname')}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
           placeholderTextColor={AppStyles.colorSet.white}
+          errors={errors?.lastname}
+          touched={touched?.lastname}
+          handleBlur={handleBlur('lastname')}
         />
 
         <CustomTextInput
           placeholder={'Email'}
-          onChange={setEmail}
+          onChange={handleChange('email')}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
           placeholderTextColor={AppStyles.colorSet.white}
+          errors={errors?.email}
+          touched={touched?.email}
+          handleBlur={handleBlur('email')}
         />
 
         <CustomTextInput
           placeholder={'Password'}
-          onChange={setPassword}
-          secureTextEntryinputTextStyle={{
+          onChange={handleChange('password')}
+          secureTextEntry
+          inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
           placeholderTextColor={AppStyles.colorSet.white}
+          errors={errors?.password}
+          touched={touched?.password}
+          handleBlur={handleBlur('password')}
         />
 
         <CustomTextInput
           placeholder={'Confirm password'}
-          onChange={setConfirmPassword}
-          secureTextEntryinputTextStyle={{
+          onChange={handleChange('confirmPassword')}
+          secureTextEntry
+          inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
           placeholderTextColor={AppStyles.colorSet.white}
+          errors={errors?.confirmPassword}
+          touched={touched?.confirmPassword}
+          handleBlur={handleBlur('confirmPassword')}
         />
-        <TextInputMask />
 
-        {renderRadioContainer()}
+        <MaskInput
+          style={styles.input}
+          value={values?.phoneNumber}
+          onChangeText={handleChange('phoneNumber')}
+          keyboardType="numeric"
+          returnKeyType="next"
+          returnKeyLabel="next"
+          placeholder={'Phone number'}
+          placeholderTextColor={AppStyles.colorSet.white}
+          mask={[
+            '(',
+            /\d/,
+            /\d/,
+            ')',
+            ' ',
+            /\d/,
+            /\d/,
+            /\d/,
+            /\d/,
+            /\d/,
+            '-',
+            /\d/,
+            /\d/,
+            /\d/,
+            /\d/,
+          ]}
+          onChange={handleChange('phoneNumber')}
+          errors={errors?.phoneNumber}
+          touched={touched?.phoneNumber}
+          handleBlur={handleBlur('phoneNumber')}
+        />
+
+        {boolean(errors?.phoneNumber && touched?.phoneNumber) ? (
+          <Text style={styles.error}>{errors?.phoneNumber}</Text>
+        ) : null}
+
+        <DatePicker
+          style={styles.datePicker}
+          date={values?.dateOfBirth}
+          mode="date"
+          placeholder="Select Date of birth"
+          format="YYYY-MM-DD"
+          maxDate="2022-01-21"
+          minDate="1994-01-01"
+          confirmBtnText="Confirm"
+          cancelBtnText="Cancel"
+          onDateChange={handleChange('dateOfBirth')}
+        />
+
+        <RadioButton data={GENDER_LIST} selectedItem={item} onPress={onPress} />
 
         <CustomButton
           title={'SIGN UP'}
           buttonStyle={{
             backgroundColor: AppStyles.colorSet.bgOrange,
-            marginVertical: MetricsMod.baseMargin,
           }}
-          onPress={() => navigateToScreen(props, MAIN_SCREEN.LOGIN)}
+          onPress={handleSubmit}
         />
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.container}>
-        {renderFieldsContainer()}
-      </ScrollView>
-      {renderBottomContainer()}
-    </SafeAreaView>
+    <Formik
+      initialValues={{
+        id: Math.floor(Math.random() * 100),
+        firstname: '',
+        lastname: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        phoneNumber: '',
+        dateOfBirth: '',
+        gender: '',
+      }}
+      validationSchema={SignupSchema}
+      onSubmit={values => {
+        setTimeout(() => {
+          dispatch(userDetails(values));
+        }, 2000);
+      }}>
+      {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
+        <SafeAreaView style={styles.container}>
+          <ScrollView style={styles.container}>
+            {renderFieldsContainer({
+              handleChange: handleChange,
+              handleBlur: handleBlur,
+              errors: errors,
+              touched: touched,
+              handleSubmit: handleSubmit,
+              values: values,
+            })}
+          </ScrollView>
+          {renderBottomContainer()}
+        </SafeAreaView>
+      )}
+    </Formik>
   );
 }
 

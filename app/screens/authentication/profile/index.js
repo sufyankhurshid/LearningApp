@@ -3,14 +3,10 @@ import {Image, SafeAreaView, Text, View} from 'react-native';
 
 import styles from './styles';
 import images from '../../../themes/Images';
-import CustomTextInput from '../../../components/customTextInput';
 import {AppStyles} from '../../../themes';
 import CustomButton from '../../../components/CustomButton';
 
 function Profile() {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-
   const renderTopContainer = () => (
     <View style={styles.topContainer}>
       <Image source={images.rightOrange} style={styles.orangeStyle} />
@@ -21,26 +17,7 @@ function Profile() {
   const renderMiddleContainer = () => {
     return (
       <View style={styles.textInput}>
-        <View style={styles.imageView}>
-          <Image style={styles.userImage} />
-        </View>
-
-        <CustomTextInput
-          placeholder={'Full name'}
-          onChange={setEmail}
-          inputTextStyle={{
-            color: AppStyles.colorSet.white,
-          }}
-          placeholderTextColor={AppStyles.colorSet.white}
-        />
-        <CustomTextInput
-          placeholder={'Last name'}
-          onChange={setEmail}
-          inputTextStyle={{
-            color: AppStyles.colorSet.white,
-          }}
-          placeholderTextColor={AppStyles.colorSet.white}
-        />
+        <Text style={styles.title}>Welcome</Text>
 
         <CustomButton
           title={'SAVE'}

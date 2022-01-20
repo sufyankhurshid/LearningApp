@@ -18,12 +18,9 @@ export default styles = StyleSheet.create({
   },
   input: {
     height: MetricsMod.forty,
-    margin: MetricsMod.smallMargin,
+    marginHorizontal: MetricsMod.smallMargin,
     borderBottomWidth: 1,
     borderBottomColor: AppStyles.colorSet.grayII,
-    fontSize: AppStyles.fontSet.xmlarge,
-    width: '50%',
-    marginRight: MetricsMod.doubleBaseMargin,
-    marginBottom: MetricsMod.doubleBaseMargin,
+    fontSize: AppStyles.fontSet.normal,
   },
 });

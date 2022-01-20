@@ -29,10 +29,10 @@ export const ICON_TYPES = {
 export const GENDER_LIST = [
   {
     id: 1,
-    gender: 'male',
+    gender: 'Male',
   },
   {
     id: 2,
-    gender: 'female',
+    gender: 'Female',
   },
 ];
