@@ -6,7 +6,7 @@ export default styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
   item: {
     flexDirection: 'row',
@@ -17,7 +17,7 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: AppStyles.fontSet.normal,
     color: AppStyles.colorSet.white,
-    lineHeight: MetricsMod.marginFortyFive,
+    lineHeight: MetricsMod.thirtyEight,
     marginRight: MetricsMod.baseMargin,
   },
 });

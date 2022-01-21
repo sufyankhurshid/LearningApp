@@ -6,10 +6,8 @@ export default styles = StyleSheet.create({
     flex: 1,
     backgroundColor: AppStyles.colorSet.bgGreen,
   },
-  topContainer: {
-    height: '28%',
-  },
   textInput: {
+    flex: 1,
     justifyContent: 'center',
     paddingHorizontal: MetricsMod.baseMargin,
   },
@@ -17,8 +15,8 @@ export default styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    width: '45%',
-    height: '29%',
+    width: MetricsMod.hundred,
+    height: MetricsMod.hundredTwenty,
   },
   createAccount: {
     width: '50%',
@@ -27,36 +25,23 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: AppStyles.fontSet.xlarge,
     color: AppStyles.colorSet.white,
-    lineHeight: MetricsMod.marginFortyFive,
   },
   imageView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    // marginTop: MetricsMod.thirty
   },
   userImage: {
-    width: MetricsMod.hundredTwenty,
-    height: MetricsMod.hundredTwenty,
-    borderRadius: MetricsMod.hundredTwenty / 2,
+    width: MetricsMod.hundred,
+    height: MetricsMod.hundred,
+    borderRadius: MetricsMod.hundred / 2,
     borderColor: AppStyles.colorSet.dividerColor,
     borderWidth: MetricsMod.xSmallMarginIII,
-    // marginVertical: MetricsMod.marginFifteen
   },
   innerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-  },
-  icons: {
-    height: MetricsMod.section,
-    width: MetricsMod.section,
-  },
-  iconView: {
-    paddingHorizontal: '10%',
-    paddingVertical: '3%',
-    backgroundColor: AppStyles.colorSet.greyColor,
-    borderRadius: MetricsMod.baseMargin,
   },
   footerContainer: {
     height: '5%',
@@ -79,7 +64,7 @@ export default styles = StyleSheet.create({
   radioContainer: {
     marginHorizontal: MetricsMod.smallMargin,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   title: {
@@ -89,5 +74,23 @@ export default styles = StyleSheet.create({
     color: AppStyles.colorSet.white,
     lineHeight: MetricsMod.marginFortyFive,
     marginLeft: MetricsMod.smallMargin,
+  },
+  datePicker: {
+    width: '100%',
+    marginHorizontal: MetricsMod.smallMargin,
+    marginTop: MetricsMod.baseMarginIII,
+  },
+  error: {
+    fontSize: AppStyles.fontSet.tiny,
+    color: AppStyles.colorSet.red,
+    marginTop: MetricsMod.xSmallMarginII,
+    marginLeft: MetricsMod.seven,
+  },
+  input: {
+    height: MetricsMod.forty,
+    marginHorizontal: MetricsMod.smallMargin,
+    borderBottomWidth: 1,
+    borderBottomColor: AppStyles.colorSet.grayII,
+    fontSize: AppStyles.fontSet.normal,
   },
 });
