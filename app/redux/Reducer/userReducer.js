@@ -1,17 +1,37 @@
-import {USER_DETAILS} from '../Types';
+import {CREATE_USERS, IS_LOGGED_IN} from '../Types';
 
 const INITIAL_STATE = {
-  userDetails: [],
+  createUsers: [],
+  isLoggedIn: false,
+  error: '',
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case USER_DETAILS: {
+    case CREATE_USERS: {
+      const alreadyExist = state?.createUsers?.find(
+        user => user?.email === action?.payload?.email,
+      );
+      if (alreadyExist) {
+        return {
+          ...state,
+          error: 'Email is already exist...',
+        };
+      }
+
       return {
         ...state,
-        userDetails: [...(state?.userDetails ?? []), action?.payload],
+        createUsers: [...(state?.createUsers ?? []), action?.payload],
       };
     }
+
+    case IS_LOGGED_IN: {
+      return {
+        ...state,
+        isLoggedIn: action?.payload,
+      };
+    }
+
     default:
       return state;
   }

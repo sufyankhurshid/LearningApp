@@ -14,16 +14,17 @@ import * as ImagePicker from 'react-native-image-crop-picker';
 import {GENDER_LIST} from '../../../constants/constant';
 import SafeAreaView from 'react-native/Libraries/Components/SafeAreaView/SafeAreaView';
 import {SignupSchema} from './schema';
-import DatePicker from 'react-native-datepicker';
 import MaskInput from 'react-native-mask-input/src/MaskInput';
 import {boolean} from 'yup';
 import {useDispatch} from 'react-redux';
-import {userDetails} from '../../../redux/Action/user';
+import {createUsers} from '../../../redux/Action/user';
+import DatePicker from 'react-native-datepicker';
 
 function Signup(props) {
+  const dispatch = useDispatch();
   const [item, setItem] = useState({});
   const [profileImage, setProfileImage] = useState('');
-  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const onPress = item => {
     setItem(item);
@@ -193,9 +194,14 @@ function Signup(props) {
             backgroundColor: AppStyles.colorSet.bgOrange,
           }}
           onPress={handleSubmit}
+          loading={loading}
         />
       </View>
     );
+  };
+
+  const createUser = async values => {
+    await dispatch(createUsers(values));
   };
 
   return (
@@ -212,10 +218,8 @@ function Signup(props) {
         gender: '',
       }}
       validationSchema={SignupSchema}
-      onSubmit={values => {
-        setTimeout(() => {
-          dispatch(userDetails(values));
-        }, 2000);
+      onSubmit={async values => {
+        await createUser(values);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>

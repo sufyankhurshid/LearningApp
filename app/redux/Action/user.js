@@ -1,10 +1,19 @@
-import {USER_DETAILS} from '../Types';
+import {CREATE_USERS, IS_LOGGED_IN} from '../Types';
 
-export const userDetails = userData => {
+export const createUsers = userData => {
   return dispatch => {
     dispatch({
-      type: USER_DETAILS,
+      type: CREATE_USERS,
       payload: userData,
+    });
+  };
+};
+
+export const isLoggedIn = login => {
+  return dispatch => {
+    dispatch({
+      type: IS_LOGGED_IN,
+      payload: login,
     });
   };
 };

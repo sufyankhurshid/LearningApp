@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -17,17 +17,26 @@ import {navigateToScreen} from '../../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../../constants/screens';
 import {MetricsMod} from '../../../themes';
 import {LoginSchema} from './schema';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {printLogs} from '../../../utils/logUtils';
+import {isLoggedIn} from '../../../redux/Action/user';
 
 function Login(props) {
-  const userData = useSelector(state => state?.user?.userDetails);
-  const {email, password} = userData || {};
+  const dispatch = useDispatch();
+  const userData = useSelector(state => state?.user?.createUsers);
+  const [loading, setLoading] = useState(false);
+  const [loginFailed, setLoginFailed] = useState(0);
+
+  printLogs({loginFailed});
+  printLogs({users: userData});
   const renderFieldsContainer = ({
     handleChange,
     handleBlur,
     errors,
     touched,
     handleSubmit,
+    loginFailed,
+    loading,
   }) => {
     return (
       <>
@@ -43,7 +52,6 @@ function Login(props) {
             errors={errors?.email}
             touched={touched?.email}
           />
-
           <CustomTextInput
             placeholder={'Password'}
             onChange={handleChange('password')}
@@ -52,12 +60,15 @@ function Login(props) {
             errors={errors?.password}
             touched={touched?.password}
           />
-
+          {loginFailed > 0 && (
+            <Text style={styles.title}>{`Login failed = ${loginFailed}`}</Text>
+          )}
           <CustomButton
             buttonStyle={{marginTop: MetricsMod.baseMargin}}
             title={'SIGN IN'}
             type="submit"
             onPress={handleSubmit}
+            loading={loading}
           />
         </View>
       </>
@@ -78,16 +89,31 @@ function Login(props) {
     );
   };
 
+  const login = values => {
+    userData.map(user => {
+      if (
+        user?.email === values?.email &&
+        user?.password === values?.password
+      ) {
+        alert('Login Successful...');
+        dispatch(isLoggedIn(true));
+        navigateToScreen(props, MAIN_SCREEN.HOME);
+      }
+    });
+
+    setLoginFailed(loginFailed + 1);
+
+    if (loginFailed > 4) {
+      navigateToScreen(props, MAIN_SCREEN.SUPPORT);
+    }
+  };
+
   return (
     <Formik
       initialValues={{email: '', password: ''}}
       validationSchema={LoginSchema}
       onSubmit={values => {
-        if (email === values?.email && password === values?.password) {
-          alert('login successfully');
-        } else {
-          alert('login failed');
-        }
+        login(values);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>
@@ -99,6 +125,7 @@ function Login(props) {
               errors: errors,
               touched: touched,
               handleSubmit: handleSubmit,
+              login_failed: loginFailed,
             })}
           </ScrollView>
           {renderBottomContainer()}

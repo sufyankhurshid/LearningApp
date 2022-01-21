@@ -1,7 +1,6 @@
 import Reactotron from 'reactotron-react-native';
 import {reactotronRedux} from 'reactotron-redux';
 import {NativeModules} from 'react-native';
-// import AsyncStorage from '@react-native-community/async-storage';
 
 let reactotron = {};
 
