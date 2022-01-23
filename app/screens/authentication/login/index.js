@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -18,17 +18,25 @@ import {MAIN_SCREEN} from '../../../constants/screens';
 import {MetricsMod} from '../../../themes';
 import {LoginSchema} from './schema';
 import {useDispatch, useSelector} from 'react-redux';
-import {printLogs} from '../../../utils/logUtils';
 import {isLoggedIn} from '../../../redux/Action/user';
+import {delay} from '../../../utils/customUtils';
 
 function Login(props) {
   const dispatch = useDispatch();
   const userData = useSelector(state => state?.user?.createUsers);
   const [loading, setLoading] = useState(false);
   const [loginFailed, setLoginFailed] = useState(0);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+  //
+  // useEffect(() => {
+  //   emailRef.current?.focus();
+  // }, []);
 
-  printLogs({loginFailed});
-  printLogs({users: userData});
+  // const onPressEnter = () => {
+  //   passwordRef.current.focus();
+  // };
+
   const renderFieldsContainer = ({
     handleChange,
     handleBlur,
@@ -36,7 +44,6 @@ function Login(props) {
     touched,
     handleSubmit,
     loginFailed,
-    loading,
   }) => {
     return (
       <>
@@ -112,8 +119,11 @@ function Login(props) {
     <Formik
       initialValues={{email: '', password: ''}}
       validationSchema={LoginSchema}
-      onSubmit={values => {
+      onSubmit={async values => {
+        setLoading(true);
+        await delay(5000);
         login(values);
+        setLoading(false);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>

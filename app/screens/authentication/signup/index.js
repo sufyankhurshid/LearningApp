@@ -19,6 +19,7 @@ import {boolean} from 'yup';
 import {useDispatch} from 'react-redux';
 import {createUsers} from '../../../redux/Action/user';
 import DatePicker from 'react-native-datepicker';
+import {delay} from '../../../utils/customUtils';
 
 function Signup(props) {
   const dispatch = useDispatch();
@@ -201,7 +202,10 @@ function Signup(props) {
   };
 
   const createUser = async values => {
-    await dispatch(createUsers(values));
+    setLoading(true);
+    await delay(5000);
+    dispatch(createUsers(values));
+    setLoading(false);
   };
 
   return (
