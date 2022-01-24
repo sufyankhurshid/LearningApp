@@ -1,4 +1,9 @@
-import {CREATE_USERS, IS_LOGGED_IN} from '../Types';
+import {
+  CREATE_USERS,
+  IS_LOGGED_IN,
+  IS_SUPPORT_SCREEN,
+  RESET_ERROR,
+} from '../Types';
 
 export const createUsers = userData => {
   return dispatch => {
@@ -14,6 +19,24 @@ export const isLoggedIn = login => {
     dispatch({
       type: IS_LOGGED_IN,
       payload: login,
+    });
+  };
+};
+
+export const resetError = reset => {
+  return dispatch => {
+    dispatch({
+      type: RESET_ERROR,
+      payload: reset,
+    });
+  };
+};
+
+export const isSupportScreen = support => {
+  return dispatch => {
+    dispatch({
+      type: IS_SUPPORT_SCREEN,
+      payload: support,
     });
   };
 };

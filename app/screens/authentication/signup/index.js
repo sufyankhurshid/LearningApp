@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {Formik} from 'formik';
 
 import styles from './styles';
@@ -16,16 +23,19 @@ import SafeAreaView from 'react-native/Libraries/Components/SafeAreaView/SafeAre
 import {SignupSchema} from './schema';
 import MaskInput from 'react-native-mask-input/src/MaskInput';
 import {boolean} from 'yup';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {createUsers} from '../../../redux/Action/user';
 import DatePicker from 'react-native-datepicker';
 import {delay} from '../../../utils/customUtils';
+import {isEmpty} from 'lodash';
+import {RESET_ERROR} from '../../../redux/Types';
 
 function Signup(props) {
   const dispatch = useDispatch();
   const [item, setItem] = useState({});
   const [profileImage, setProfileImage] = useState('');
   const [loading, setLoading] = useState(false);
+  const error = useSelector(state => state?.user?.error) || '';
 
   const onPress = item => {
     setItem(item);
@@ -201,11 +211,16 @@ function Signup(props) {
     );
   };
 
-  const createUser = async values => {
-    setLoading(true);
-    await delay(5000);
-    dispatch(createUsers(values));
+  if (!isEmpty(error)) {
     setLoading(false);
+    Alert.alert('Error', error);
+  }
+
+  const createUser = async values => {
+    await delay(2000);
+    dispatch(createUsers(values));
+    dispatch(RESET_ERROR(''));
+    navigateToScreen(props, MAIN_SCREEN.LOGIN);
   };
 
   return (
@@ -223,7 +238,9 @@ function Signup(props) {
       }}
       validationSchema={SignupSchema}
       onSubmit={async values => {
+        setLoading(true);
         await createUser(values);
+        setLoading(false);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>

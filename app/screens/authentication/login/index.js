@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -18,24 +18,26 @@ import {MAIN_SCREEN} from '../../../constants/screens';
 import {MetricsMod} from '../../../themes';
 import {LoginSchema} from './schema';
 import {useDispatch, useSelector} from 'react-redux';
-import {isLoggedIn} from '../../../redux/Action/user';
 import {delay} from '../../../utils/customUtils';
+import {
+  isLoggedIn,
+  isSupportScreen,
+  resetError,
+} from '../../../redux/Action/user';
+import Toast from 'react-native-toast-message';
 
 function Login(props) {
   const dispatch = useDispatch();
   const userData = useSelector(state => state?.user?.createUsers);
   const [loading, setLoading] = useState(false);
   const [loginFailed, setLoginFailed] = useState(0);
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-  //
-  // useEffect(() => {
-  //   emailRef.current?.focus();
-  // }, []);
 
-  // const onPressEnter = () => {
-  //   passwordRef.current.focus();
-  // };
+  useEffect(() => {
+    if (loginFailed > 4) {
+      navigateToScreen(props, MAIN_SCREEN.SUPPORT);
+      dispatch(isSupportScreen(true));
+    }
+  }, [loginFailed]);
 
   const renderFieldsContainer = ({
     handleChange,
@@ -96,23 +98,26 @@ function Login(props) {
     );
   };
 
+  const showToast = ({type, text}) => {
+    Toast.show({
+      type: type,
+      text1: text,
+    });
+  };
+
   const login = values => {
     userData.map(user => {
       if (
         user?.email === values?.email &&
         user?.password === values?.password
       ) {
-        alert('Login Successful...');
         dispatch(isLoggedIn(true));
+        dispatch(resetError(''));
+        showToast({type: 'success', text: 'Login Successful... 👋'});
         navigateToScreen(props, MAIN_SCREEN.HOME);
       }
     });
-
     setLoginFailed(loginFailed + 1);
-
-    if (loginFailed > 4) {
-      navigateToScreen(props, MAIN_SCREEN.SUPPORT);
-    }
   };
 
   return (
@@ -121,7 +126,7 @@ function Login(props) {
       validationSchema={LoginSchema}
       onSubmit={async values => {
         setLoading(true);
-        await delay(5000);
+        await delay(2000);
         login(values);
         setLoading(false);
       }}>

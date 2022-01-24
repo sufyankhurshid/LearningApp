@@ -10,6 +10,10 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Foundation from 'react-native-vector-icons/Foundation';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import styles from '../components/CustomListingComponent/styles';
+import {AppStyles, MetricsMod} from '../themes';
+import VectorIconComponent from '../components/VectorIconComponent';
+import React from 'react';
 
 export const ICON_TYPES = {
   AntDesign: 'AntDesign',
@@ -34,5 +38,22 @@ export const GENDER_LIST = [
   {
     id: 2,
     gender: 'Female',
+  },
+];
+
+export const ACTION = [
+  {
+    text: 'Create Post',
+    icon: (
+      <VectorIconComponent
+        style={styles.icon}
+        name={'create-outline'}
+        size={MetricsMod.twentyThree}
+        color={AppStyles.colorSet.white}
+        type={ICON_TYPES.IonIcons}
+      />
+    ),
+    name: 'bt_language',
+    position: 1,
   },
 ];

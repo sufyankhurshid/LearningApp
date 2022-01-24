@@ -1,5 +1,6 @@
 import React from 'react';
 import {Provider} from 'react-redux';
+import Toast from 'react-native-toast-message';
 
 import RootNavigator from './navigations/rootNavigator';
 import persist from './redux/Store';
@@ -12,6 +13,7 @@ const App = () => {
     <Provider store={persistStore.store}>
       <PersistGate loading={null} persistor={persistStore.persistor}>
         <RootNavigator />
+        <Toast />
       </PersistGate>
     </Provider>
   );

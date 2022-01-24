@@ -1,8 +1,14 @@
-import {CREATE_USERS, IS_LOGGED_IN} from '../Types';
+import {
+  CREATE_USERS,
+  IS_LOGGED_IN,
+  IS_SUPPORT_SCREEN,
+  RESET_ERROR,
+} from '../Types';
 
 const INITIAL_STATE = {
   createUsers: [],
   isLoggedIn: false,
+  isSupport: false,
   error: '',
 };
 
@@ -10,7 +16,7 @@ export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case CREATE_USERS: {
       const alreadyExist = state?.createUsers?.find(
-        user => user?.email === action?.payload?.email,
+          user => user?.email === action?.payload?.email,
       );
       if (alreadyExist) {
         return {
@@ -25,6 +31,13 @@ export default (state = INITIAL_STATE, action) => {
       };
     }
 
+    case IS_SUPPORT_SCREEN: {
+      return {
+        ...state,
+        isSupport: action?.payload,
+      };
+    }
+
     case IS_LOGGED_IN: {
       return {
         ...state,
@@ -32,6 +45,12 @@ export default (state = INITIAL_STATE, action) => {
       };
     }
 
+    case RESET_ERROR: {
+      return {
+        ...state,
+        error: '',
+      };
+    }
     default:
       return state;
   }
