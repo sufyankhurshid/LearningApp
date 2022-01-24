@@ -59,4 +59,14 @@ export default styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: AppStyles.fontSet.smaller,
   },
+  title: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: AppStyles.fontSet.normalI,
+    color: AppStyles.colorSet.bgGreen,
+    lineHeight: MetricsMod.thirtyEight,
+  },
 });
