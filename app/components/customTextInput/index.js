@@ -1,30 +1,40 @@
-import React from 'react';
+import React, {forwardRef} from 'react';
 import PropTypes from 'prop-types';
 import {Text, TextInput} from 'react-native';
 import styles from './styles';
 import {boolean} from 'yup';
 
-function CustomTextInput({
-  placeholder,
-  onChange,
-  secureTextEntry,
-  inputTextStyle,
-  placeholderTextColor,
-  onBlur,
-  errors,
-  touched,
-}) {
+function CustomTextInput(props, ref) {
+  const {
+    placeholder,
+    onChangeText,
+    secureTextEntry,
+    inputTextStyle,
+    placeholderTextColor,
+    onBlur,
+    errors,
+    touched,
+    value,
+    onChange,
+    onSubmitEditing,
+    autoFocus,
+  } = props || {};
   return (
     <>
       <TextInput
         style={[styles.input, inputTextStyle]}
-        onChangeText={onChange}
+        value={value}
+        onChangeText={onChangeText}
+        onChange={onChange}
         placeholder={placeholder}
+        autoFocus={autoFocus}
         placeholderTextColor={placeholderTextColor}
         secureTextEntry={secureTextEntry}
         onBlur={onBlur}
         returnKeyType={'next'}
         returnKeyLabel={'next'}
+        onSubmitEditing={onSubmitEditing}
+        ref={ref}
       />
       {boolean(errors && touched) ? (
         <Text style={styles.error}>{errors}</Text>
@@ -33,19 +43,21 @@ function CustomTextInput({
   );
 }
 
-export default CustomTextInput;
+export default forwardRef(CustomTextInput);
 
 CustomTextInput.propTypes = {
   placeholder: PropTypes.string,
-  onChange: PropTypes.func,
+  onChangeText: PropTypes.func,
   secureTextEntry: PropTypes.bool,
   inputTextStyle: PropTypes.object,
+  autoFocus: PropTypes.bool,
 };
 
 CustomTextInput.defaultProps = {
   placeholder: '',
   errorMessage: '',
-  onChange: () => {},
+  onChangeText: () => {},
   secureTextEntry: false,
   inputTextStyle: {},
+  autoFocus: false,
 };

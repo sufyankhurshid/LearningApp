@@ -15,15 +15,16 @@ export default styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    width: MetricsMod.hundred,
-    height: MetricsMod.hundredTwenty,
+    width: MetricsMod.eightyFive,
+    height: MetricsMod.hundred,
   },
   createAccount: {
-    width: '50%',
-    marginLeft: MetricsMod.marginFifteen,
-    marginTop: MetricsMod.baseMarginIII,
+    position: 'absolute',
+    left: 10,
+    top: 70,
+    // marginLeft: MetricsMod.marginFifteen,
     fontWeight: 'bold',
-    fontSize: AppStyles.fontSet.xlarge,
+    fontSize: AppStyles.fontSet.large,
     color: AppStyles.colorSet.white,
   },
   imageView: {
@@ -32,9 +33,10 @@ export default styles = StyleSheet.create({
     alignItems: 'center',
   },
   userImage: {
-    width: MetricsMod.hundred,
-    height: MetricsMod.hundred,
-    borderRadius: MetricsMod.hundred / 2,
+    marginTop: 20,
+    width: MetricsMod.eighty,
+    height: MetricsMod.eighty,
+    borderRadius: MetricsMod.eighty / 2,
     borderColor: AppStyles.colorSet.dividerColor,
     borderWidth: MetricsMod.xSmallMarginIII,
   },
@@ -62,13 +64,19 @@ export default styles = StyleSheet.create({
     fontSize: AppStyles.fontSet.smaller,
   },
   radioContainer: {
-    marginHorizontal: MetricsMod.smallMargin,
+    marginHorizontal: MetricsMod.baseMargin,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  radio: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: MetricsMod.thirty,
+  },
   title: {
-    width: '50%',
+    // width: '50%',
     fontWeight: 'bold',
     fontSize: AppStyles.fontSet.normal,
     color: AppStyles.colorSet.white,
@@ -78,7 +86,7 @@ export default styles = StyleSheet.create({
   datePicker: {
     width: '100%',
     marginHorizontal: MetricsMod.smallMargin,
-    marginTop: MetricsMod.baseMarginIII,
+    marginTop: MetricsMod.baseMargin,
   },
   error: {
     fontSize: AppStyles.fontSet.tiny,
@@ -86,11 +94,28 @@ export default styles = StyleSheet.create({
     marginTop: MetricsMod.xSmallMarginII,
     marginLeft: MetricsMod.seven,
   },
+  errorExist: {
+    textAlign: 'center',
+    fontSize: AppStyles.fontSet.normal,
+    color: AppStyles.colorSet.red,
+    marginTop: MetricsMod.baseMargin,
+    marginLeft: MetricsMod.seven,
+  },
+  errorGender: {
+    textAlign: 'center',
+    fontSize: AppStyles.fontSet.tiny,
+    color: AppStyles.colorSet.red,
+    marginLeft: MetricsMod.seven,
+  },
+
   input: {
     height: MetricsMod.forty,
     marginHorizontal: MetricsMod.smallMargin,
     borderBottomWidth: 1,
     borderBottomColor: AppStyles.colorSet.grayII,
     fontSize: AppStyles.fontSet.normal,
+  },
+  icon: {
+    marginTop: MetricsMod.doubleBaseMargin,
   },
 });
