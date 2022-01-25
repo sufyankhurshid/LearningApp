@@ -6,6 +6,7 @@ import AppStyles from '../../themes/AppStyles';
 
 function CustomButton(props) {
   const {title, onPress, disabled, buttonStyle, loading} = props || {};
+
   return (
     <View style={styles.buttonContainer}>
       <TouchableOpacity

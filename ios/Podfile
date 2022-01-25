@@ -16,6 +16,8 @@ target 'learningApp' do
 
   pod 'react-native-text-input-mask', :path => '../node_modules/react-native-text-input-mask'
 
+  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
+
   target 'learningAppTests' do
     inherit! :complete
     # Pods for testing

@@ -13,10 +13,19 @@ export default styles = StyleSheet.create({
     width: MetricsMod.hundredFifty,
     height: MetricsMod.hundredSeventyFive,
   },
+  logout: {
+    position: 'absolute',
+    right: 30,
+    top: 50,
+  },
+  homeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   createAccount: {
-    width: '50%',
     marginLeft: MetricsMod.marginFifteen,
-    marginTop: MetricsMod.eighty,
+    marginTop: MetricsMod.section,
     fontWeight: 'bold',
     fontSize: AppStyles.fontSet.xmlarge,
     color: AppStyles.colorSet.white,
@@ -27,5 +36,10 @@ export default styles = StyleSheet.create({
     fontSize: AppStyles.fontSet.normalI,
     color: AppStyles.colorSet.white,
     lineHeight: MetricsMod.thirtyEight,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
