@@ -4,7 +4,6 @@ import styles from './styles';
 import {ICON_TYPES} from '../../constants/constant';
 import VectorIconComponent from '../VectorIconComponent';
 import {AppStyles, MetricsMod} from '../../themes';
-import PropTypes from 'prop-types';
 
 function CustomListingComponent(props) {
   const {id, title, userId, body} = props || {};
@@ -30,15 +29,3 @@ function CustomListingComponent(props) {
 }
 
 export default CustomListingComponent;
-
-CustomListingComponent.propTypes = {
-  id: PropTypes.string,
-  title: PropTypes.string,
-  body: PropTypes.string,
-};
-
-CustomListingComponent.propTypes = {
-  id: '',
-  title: '',
-  body: '',
-};

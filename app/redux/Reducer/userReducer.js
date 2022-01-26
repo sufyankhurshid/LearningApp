@@ -16,7 +16,7 @@ export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case CREATE_USERS: {
       const alreadyExist = state?.createUsers?.find(
-          user => user?.email === action?.payload?.email,
+        user => user?.email === action?.payload?.email,
       );
       if (alreadyExist) {
         return {

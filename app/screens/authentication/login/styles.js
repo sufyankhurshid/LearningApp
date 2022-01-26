@@ -12,6 +12,16 @@ export default styles = StyleSheet.create({
     paddingHorizontal: MetricsMod.baseMargin,
     paddingVertical: MetricsMod.doubleBaseMargin,
   },
+  forget: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: AppStyles.fontSet.normalI,
+    color: AppStyles.colorSet.blackX,
+    lineHeight: MetricsMod.thirtyEight,
+  },
   forgetPassword: {
     paddingHorizontal: MetricsMod.marginFifteen,
   },

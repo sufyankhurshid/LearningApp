@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 
 export const SignupSchema = Yup.object().shape({
   firstname: Yup.string()
-    .min(4, 'Password is too Short!')
+    .min(4, 'Firstname is too Short!')
     .required('Firstname is required'),
   lastname: Yup.string()
     .min(4, 'Password is too Short!')
@@ -23,5 +23,8 @@ export const SignupSchema = Yup.object().shape({
         return this.parent.password === value;
       },
     ),
-  phoneNumber: Yup.string().required('Phone number is required'),
+  phoneNumber: Yup.string()
+    .min(10, 'Phone number is invalid!')
+    .required('Phone number is required'),
+  gender: Yup.string().required('Gender is required'),
 });

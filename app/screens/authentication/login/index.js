@@ -1,6 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Image,
+  Keyboard,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -15,22 +16,19 @@ import CustomTextInput from '../../../components/customTextInput';
 import CustomButton from '../../../components/CustomButton';
 import {navigateToScreen} from '../../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../../constants/screens';
-import {MetricsMod} from '../../../themes';
+import {AppStyles, MetricsMod} from '../../../themes';
 import {LoginSchema} from './schema';
 import {useDispatch, useSelector} from 'react-redux';
-import {delay} from '../../../utils/customUtils';
-import {
-  isLoggedIn,
-  isSupportScreen,
-  resetError,
-} from '../../../redux/Action/user';
-import Toast from 'react-native-toast-message';
+import {delay, showToast} from '../../../utils/customUtils';
+import {isLoggedIn, resetError} from '../../../redux/Action/user';
 
 function Login(props) {
   const dispatch = useDispatch();
   const userData = useSelector(state => state?.user?.createUsers);
   const [loading, setLoading] = useState(false);
   const [loginFailed, setLoginFailed] = useState(0);
+  const emailRef = useRef(null);
+  const passRef = useRef(null);
 
   useEffect(() => {
     if (loginFailed > 4) {
@@ -39,13 +37,20 @@ function Login(props) {
     }
   }, [loginFailed]);
 
+  const onFocusField = name => {
+    name?.current?.focus();
+  };
+
+  const keyboardDismiss = () => {
+    Keyboard.dismiss();
+  };
   const renderFieldsContainer = ({
     handleChange,
     handleBlur,
     errors,
     touched,
     handleSubmit,
-    loginFailed,
+    values,
   }) => {
     return (
       <>
@@ -56,23 +61,33 @@ function Login(props) {
         <View style={styles.textInput}>
           <CustomTextInput
             placeholder={'Email'}
-            onChange={handleChange('email')}
+            value={values?.email}
+            onChangeText={handleChange('email')}
             onBlur={handleBlur('email')}
             errors={errors?.email}
             touched={touched?.email}
+            onSubmitEditing={() => onFocusField(passRef)}
           />
           <CustomTextInput
             placeholder={'Password'}
-            onChange={handleChange('password')}
+            value={values?.password}
+            onChangeText={handleChange('password')}
             secureTextEntry
             onBlur={handleBlur('email')}
             errors={errors?.password}
             touched={touched?.password}
+            ref={passRef}
+            onSubmitEditing={keyboardDismiss}
           />
-          {loginFailed > 0 && (
-            <Text style={styles.title}>{`Login failed = ${loginFailed}`}</Text>
-          )}
+          <Text
+            style={styles.forget}
+            onPress={() => navigateToScreen(props, MAIN_SCREEN.FORGET)}>
+            {' '}
+            Forget password ?{' '}
+          </Text>
+
           <CustomButton
+            loadingColor={AppStyles.colorSet.bgOrange}
             buttonStyle={{marginTop: MetricsMod.baseMargin}}
             title={'SIGN IN'}
             type="submit"
@@ -88,7 +103,6 @@ function Login(props) {
     return (
       <View style={styles.footerContainer}>
         <Text style={styles.dontHave}>Don’t have an account? </Text>
-
         <Text
           style={styles.signUp}
           onPress={() => navigateToScreen(props, MAIN_SCREEN.SIGN_UP)}>
@@ -96,13 +110,6 @@ function Login(props) {
         </Text>
       </View>
     );
-  };
-
-  const showToast = ({type, text}) => {
-    Toast.show({
-      type: type,
-      text1: text,
-    });
   };
 
   const login = values => {
@@ -113,22 +120,29 @@ function Login(props) {
       ) {
         dispatch(isLoggedIn(true));
         dispatch(resetError(''));
-        showToast({type: 'success', text: 'Login Successful... 👋'});
+        // showToast({type: 'success', text: 'Login Successful...👋'});
         navigateToScreen(props, MAIN_SCREEN.HOME);
       }
     });
-    setLoginFailed(loginFailed + 1);
+    showToast({type: 'error', text: 'Login Failed...'});
+    setLoginFailed(loginFailed => loginFailed + 1);
+  };
+
+  const initialValues = {
+    email: '',
+    password: '',
   };
 
   return (
     <Formik
-      initialValues={{email: '', password: ''}}
+      initialValues={initialValues}
       validationSchema={LoginSchema}
-      onSubmit={async values => {
+      onSubmit={async (values, {resetForm}) => {
         setLoading(true);
         await delay(2000);
         login(values);
         setLoading(false);
+        resetForm(initialValues);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>
@@ -140,7 +154,7 @@ function Login(props) {
               errors: errors,
               touched: touched,
               handleSubmit: handleSubmit,
-              login_failed: loginFailed,
+              values: values,
             })}
           </ScrollView>
           {renderBottomContainer()}

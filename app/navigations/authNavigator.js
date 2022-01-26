@@ -1,8 +1,9 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Home, Login, Signup, Support} from '../screens';
+import {Login, Signup, Support} from '../screens';
 import {MAIN_SCREEN} from '../constants/screens';
 import {useSelector} from 'react-redux';
+import ForgetPassword from '../screens/authentication/forgetPassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,8 +39,8 @@ function AuthNavigator() {
             }}
           />
           <Stack.Screen
-            name={MAIN_SCREEN.HOME}
-            component={Home}
+            name={MAIN_SCREEN.FORGET}
+            component={ForgetPassword}
             options={{
               headerShown: false,
             }}

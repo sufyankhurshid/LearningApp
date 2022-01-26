@@ -3,4 +3,5 @@ export const MAIN_SCREEN = {
   LOGIN: 'Login',
   SUPPORT: 'Support',
   HOME: 'Home',
+  FORGET: 'ForgetPassword',
 };

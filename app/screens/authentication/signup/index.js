@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
-  Alert,
   Image,
+  Keyboard,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -16,29 +16,39 @@ import CustomButton from '../../../components/CustomButton';
 import {AppStyles, Images, MetricsMod} from '../../../themes';
 import {navigateToScreen} from '../../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../../constants/screens';
-import RadioButton from '../../../components/RadioButton';
 import * as ImagePicker from 'react-native-image-crop-picker';
-import {GENDER_LIST} from '../../../constants/constant';
 import SafeAreaView from 'react-native/Libraries/Components/SafeAreaView/SafeAreaView';
 import {SignupSchema} from './schema';
 import MaskInput from 'react-native-mask-input/src/MaskInput';
 import {boolean} from 'yup';
 import {useDispatch, useSelector} from 'react-redux';
-import {createUsers} from '../../../redux/Action/user';
 import DatePicker from 'react-native-datepicker';
 import {delay} from '../../../utils/customUtils';
+import {RadioButton} from 'react-native-paper';
+import {CHOOSE_CAMERA_LIST, ICON_TYPES} from '../../../constants/constant';
+import VectorIconComponent from '../../../components/VectorIconComponent';
+import {createUsers, resetError} from '../../../redux/Action/user';
+import CustomModal from '../../../components/customModal';
 import {isEmpty} from 'lodash';
-import {RESET_ERROR} from '../../../redux/Types';
 
 function Signup(props) {
   const dispatch = useDispatch();
-  const [item, setItem] = useState({});
   const [profileImage, setProfileImage] = useState('');
   const [loading, setLoading] = useState(false);
   const error = useSelector(state => state?.user?.error) || '';
+  const [openModal, setOpenModal] = useState(false);
+  const lastnameRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const confirmRef = useRef();
+  const phoneRef = useRef();
 
-  const onPress = item => {
-    setItem(item);
+  useEffect(() => {
+    dispatch(resetError(''));
+  }, []);
+
+  const toggleModel = () => {
+    setOpenModal(prevState => !prevState);
   };
 
   const renderBottomContainer = () => {
@@ -61,6 +71,29 @@ function Signup(props) {
       cropping: true,
     });
     setProfileImage({uri: image?.path});
+    setOpenModal(false);
+  };
+
+  const takePhotoFromCamera = async () => {
+    const image = await ImagePicker.openCamera({
+      width: MetricsMod.threeHundred,
+      height: MetricsMod.threeHundred,
+      cropping: true,
+    });
+    setProfileImage({uri: image?.path});
+    setOpenModal(false);
+  };
+
+  const onFocusField = name => {
+    name?.current?.focus();
+  };
+
+  const keyboardDismiss = () => {
+    Keyboard.dismiss();
+  };
+
+  const onPressBack = () => {
+    navigateToScreen(props, MAIN_SCREEN.LOGIN);
   };
 
   const renderFieldsContainer = ({
@@ -70,37 +103,51 @@ function Signup(props) {
     touched,
     handleSubmit,
     values,
+    setFieldValue,
+    setFieldTouched,
   }) => {
     return (
       <View style={styles.textInput}>
+        <VectorIconComponent
+          style={styles.icon}
+          name={'arrow-back'}
+          size={MetricsMod.forty}
+          color={AppStyles.colorSet.white}
+          type={ICON_TYPES.IonIcons}
+          onPress={onPressBack}
+        />
         <Image source={images.rightOrange} style={styles.orangeStyle} />
-        <Text style={styles.createAccount}>Create Account</Text>
-
+        <Text style={styles.createAccount}>Create {'\n'}Account</Text>
         <TouchableOpacity
           style={styles.imageView}
           activeOpacity={0.3}
-          onPress={takePhotoFromLibrary}>
+          onPress={toggleModel}>
           <Image
             source={profileImage ? profileImage : Images.addImage}
             style={styles.userImage}
           />
         </TouchableOpacity>
-
+        {!isEmpty(error) ? (
+          <Text style={styles.errorExist}>{error}</Text>
+        ) : null}
         <CustomTextInput
           placeholder={'First name'}
-          onChange={handleChange('firstname')}
+          onChangeText={handleChange('firstname')}
+          value={values?.firstname}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
           placeholderTextColor={AppStyles.colorSet.white}
           errors={errors?.firstname}
           touched={touched?.firstname}
-          handleBlur={handleBlur('firstname')}
+          onBlur={handleBlur('firstname')}
+          onSubmitEditing={() => onFocusField(lastnameRef)}
         />
-
         <CustomTextInput
           placeholder={'Last name'}
-          onChange={handleChange('lastname')}
+          onChangeText={handleChange('lastname')}
+          value={values?.lastname}
+          ref={lastnameRef}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
@@ -108,11 +155,13 @@ function Signup(props) {
           errors={errors?.lastname}
           touched={touched?.lastname}
           handleBlur={handleBlur('lastname')}
+          onSubmitEditing={() => onFocusField(emailRef)}
         />
-
         <CustomTextInput
           placeholder={'Email'}
-          onChange={handleChange('email')}
+          value={values?.email}
+          ref={emailRef}
+          onChangeText={handleChange('email')}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
@@ -120,12 +169,14 @@ function Signup(props) {
           errors={errors?.email}
           touched={touched?.email}
           handleBlur={handleBlur('email')}
+          onSubmitEditing={() => onFocusField(passwordRef)}
         />
-
         <CustomTextInput
           placeholder={'Password'}
-          onChange={handleChange('password')}
+          value={values?.password}
+          onChangeText={handleChange('password')}
           secureTextEntry
+          ref={passwordRef}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
@@ -133,11 +184,13 @@ function Signup(props) {
           errors={errors?.password}
           touched={touched?.password}
           handleBlur={handleBlur('password')}
+          onSubmitEditing={() => onFocusField(confirmRef)}
         />
-
         <CustomTextInput
           placeholder={'Confirm password'}
-          onChange={handleChange('confirmPassword')}
+          value={values?.confirmPassword}
+          ref={confirmRef}
+          onChangeText={handleChange('confirmPassword')}
           secureTextEntry
           inputTextStyle={{
             color: AppStyles.colorSet.white,
@@ -146,11 +199,12 @@ function Signup(props) {
           errors={errors?.confirmPassword}
           touched={touched?.confirmPassword}
           handleBlur={handleBlur('confirmPassword')}
+          onSubmitEditing={() => onFocusField(phoneRef)}
         />
-
         <MaskInput
           style={styles.input}
           value={values?.phoneNumber}
+          ref={phoneRef}
           onChangeText={handleChange('phoneNumber')}
           keyboardType="numeric"
           returnKeyType="next"
@@ -178,28 +232,42 @@ function Signup(props) {
           errors={errors?.phoneNumber}
           touched={touched?.phoneNumber}
           handleBlur={handleBlur('phoneNumber')}
+          onSubmitEditing={keyboardDismiss}
         />
-
         {boolean(errors?.phoneNumber && touched?.phoneNumber) ? (
           <Text style={styles.error}>{errors?.phoneNumber}</Text>
         ) : null}
-
         <DatePicker
           style={styles.datePicker}
           date={values?.dateOfBirth}
           mode="date"
           placeholder="Select Date of birth"
           format="YYYY-MM-DD"
-          maxDate="2022-01-21"
-          minDate="1994-01-01"
+          maxDate="2000-01-01"
+          minDate="1960-01-01"
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
           onDateChange={handleChange('dateOfBirth')}
         />
-
-        <RadioButton data={GENDER_LIST} selectedItem={item} onPress={onPress} />
-
+        <RadioButton.Group
+          onValueChange={handleChange('gender')}
+          value={values?.gender}>
+          <View style={styles.radio}>
+            <View style={styles.radioContainer}>
+              <RadioButton value="male" />
+              <Text style={styles.title}>Male</Text>
+            </View>
+            <View style={styles.radioContainer}>
+              <RadioButton value="Female" />
+              <Text style={styles.title}>Female</Text>
+            </View>
+          </View>
+        </RadioButton.Group>
+        {boolean(errors?.gender && touched?.gender) ? (
+          <Text style={styles.errorGender}>{errors?.gender}</Text>
+        ) : null}
         <CustomButton
+          loadingColor={AppStyles.colorSet.bgGreen}
           title={'SIGN UP'}
           buttonStyle={{
             backgroundColor: AppStyles.colorSet.bgOrange,
@@ -211,38 +279,58 @@ function Signup(props) {
     );
   };
 
-  if (!isEmpty(error)) {
-    setLoading(false);
-    Alert.alert('Error', error);
-  }
+  const onPressItem = key => {
+    if (key === 'takePhoto') {
+      takePhotoFromCamera();
+    } else {
+      takePhotoFromLibrary();
+    }
+  };
 
   const createUser = async values => {
     await delay(2000);
     dispatch(createUsers(values));
-    dispatch(RESET_ERROR(''));
     navigateToScreen(props, MAIN_SCREEN.LOGIN);
+  };
+
+  const initialValues = {
+    id: Math.floor(Math.random() * 100),
+    image: Images.addImage,
+    firstname: '',
+    lastname: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phoneNumber: '',
+    dateOfBirth: '',
+    gender: '',
   };
 
   return (
     <Formik
-      initialValues={{
-        id: Math.floor(Math.random() * 100),
-        firstname: '',
-        lastname: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        phoneNumber: '',
-        dateOfBirth: '',
-        gender: '',
-      }}
+      initialValues={initialValues}
       validationSchema={SignupSchema}
-      onSubmit={async values => {
+      onSubmit={async (values, {resetForm}) => {
+        let {confirmPassword, image, phoneNumber, ...val} = values;
+        const newImage = {image: profileImage.uri ?? ''};
+        const phonenumber = phoneNumber.replace(/[^\d]/g, '');
+        const newValues = {...val, ...newImage, phonenumber};
         setLoading(true);
-        await createUser(values);
+        await createUser(newValues);
         setLoading(false);
+        resetForm(initialValues);
+        setProfileImage(Images.addImage);
       }}>
-      {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
+      {({
+        handleChange,
+        handleBlur,
+        errors,
+        touched,
+        handleSubmit,
+        values,
+        setFieldValue,
+        setFieldTouched,
+      }) => (
         <SafeAreaView style={styles.container}>
           <ScrollView style={styles.container}>
             {renderFieldsContainer({
@@ -251,8 +339,16 @@ function Signup(props) {
               errors: errors,
               touched: touched,
               handleSubmit: handleSubmit,
+              setFieldValue: setFieldValue,
+              setFieldTouched: setFieldTouched,
               values: values,
             })}
+            <CustomModal
+              open={openModal}
+              close={toggleModel}
+              data={CHOOSE_CAMERA_LIST}
+              onPress={onPressItem}
+            />
           </ScrollView>
           {renderBottomContainer()}
         </SafeAreaView>

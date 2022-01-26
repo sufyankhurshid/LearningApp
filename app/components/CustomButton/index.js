@@ -2,10 +2,10 @@ import React from 'react';
 import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 import styles from './styles';
 import PropTypes from 'prop-types';
-import AppStyles from '../../themes/AppStyles';
 
 function CustomButton(props) {
-  const {title, onPress, disabled, buttonStyle, loading} = props || {};
+  const {title, onPress, disabled, buttonStyle, loading, loadingColor} =
+    props || {};
 
   return (
     <View style={styles.buttonContainer}>
@@ -15,7 +15,7 @@ function CustomButton(props) {
         disabled={disabled}
         onPress={onPress}>
         {loading ? (
-          <ActivityIndicator size="small" color={AppStyles.colorSet.bgOrange} />
+          <ActivityIndicator size="small" color={loadingColor} />
         ) : (
           <Text style={styles.textButtonVerify}>{title}</Text>
         )}

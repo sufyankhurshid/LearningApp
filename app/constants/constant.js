@@ -57,3 +57,18 @@ export const ACTION = [
     position: 1,
   },
 ];
+
+export const CHOOSE_CAMERA_LIST = [
+  {
+    key: 'takePhoto',
+    title: 'Take Photo',
+    iconType: ICON_TYPES.Entypo,
+    icon: 'camera',
+  },
+  {
+    key: 'chooseFromLibrary',
+    title: 'Choose from library',
+    iconType: ICON_TYPES.FontAwesome,
+    icon: 'photo',
+  },
+];

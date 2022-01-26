@@ -5,12 +5,12 @@ export default styles = StyleSheet.create({
   buttonContainer: {
     width: '100%',
     alignItems: 'center',
-    marginVertical: MetricsMod.baseMargin,
+    marginVertical: MetricsMod.smallMargin,
   },
   button: {
     width: '90%',
     backgroundColor: AppStyles.colorSet.bgGreen,
-    paddingVertical: MetricsMod.baseMargin,
+    paddingVertical: MetricsMod.smallMarginII,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: MetricsMod.baseMargin,
