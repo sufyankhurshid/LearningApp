@@ -27,4 +27,6 @@ export const SignupSchema = Yup.object().shape({
     .min(10, 'Phone number is invalid!')
     .required('Phone number is required'),
   gender: Yup.string().required('Gender is required'),
+  image: Yup.string().required('Profile picture is required'),
+  dateOfBirth: Yup.string().required('Date of birth is required'),
 });

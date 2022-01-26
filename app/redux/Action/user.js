@@ -1,14 +1,15 @@
 import {
-  CREATE_USERS,
   IS_LOGGED_IN,
   IS_SUPPORT_SCREEN,
+  RECOVER_PASSWORD,
   RESET_ERROR,
+  USERS,
 } from '../Types';
 
-export const createUsers = userData => {
+export const users = userData => {
   return dispatch => {
     dispatch({
-      type: CREATE_USERS,
+      type: USERS,
       payload: userData,
     });
   };
@@ -37,6 +38,15 @@ export const isSupportScreen = support => {
     dispatch({
       type: IS_SUPPORT_SCREEN,
       payload: support,
+    });
+  };
+};
+
+export const recoverPassword = (email, key) => {
+  return dispatch => {
+    dispatch({
+      type: RECOVER_PASSWORD,
+      payload: {[email]: key},
     });
   };
 };

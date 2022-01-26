@@ -53,7 +53,7 @@ export const ACTION = [
         type={ICON_TYPES.IonIcons}
       />
     ),
-    name: 'bt_language',
+    name: 'createPost',
     position: 1,
   },
 ];

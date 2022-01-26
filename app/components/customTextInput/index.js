@@ -2,7 +2,6 @@ import React, {forwardRef} from 'react';
 import PropTypes from 'prop-types';
 import {Text, TextInput} from 'react-native';
 import styles from './styles';
-import {boolean} from 'yup';
 
 function CustomTextInput(props, ref) {
   const {
@@ -18,6 +17,8 @@ function CustomTextInput(props, ref) {
     onChange,
     onSubmitEditing,
     autoFocus,
+    numberOfLines,
+    multiline,
   } = props || {};
   return (
     <>
@@ -31,12 +32,14 @@ function CustomTextInput(props, ref) {
         placeholderTextColor={placeholderTextColor}
         secureTextEntry={secureTextEntry}
         onBlur={onBlur}
+        multiline={multiline}
+        numberOfLines={numberOfLines}
         returnKeyType={'next'}
         returnKeyLabel={'next'}
         onSubmitEditing={onSubmitEditing}
         ref={ref}
       />
-      {boolean(errors && touched) ? (
+      {Boolean(errors) && Boolean(touched) ? (
         <Text style={styles.error}>{errors}</Text>
       ) : null}
     </>
@@ -51,6 +54,7 @@ CustomTextInput.propTypes = {
   secureTextEntry: PropTypes.bool,
   inputTextStyle: PropTypes.object,
   autoFocus: PropTypes.bool,
+  multiline: PropTypes.bool,
 };
 
 CustomTextInput.defaultProps = {
@@ -60,4 +64,5 @@ CustomTextInput.defaultProps = {
   secureTextEntry: false,
   inputTextStyle: {},
   autoFocus: false,
+  multiline: false,
 };

@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Image, StatusBar, Text, View} from 'react-native';
-import uuid from 'react-native-uuid';
+import React, {useState} from 'react';
+import {Alert, Image, StatusBar, Text, View} from 'react-native';
 
 import styles from './styles';
 import {AppStyles, MetricsMod} from '../../../themes';
@@ -13,23 +12,20 @@ import CustomButton from '../../../components/CustomButton';
 import SafeAreaView from 'react-native/Libraries/Components/SafeAreaView/SafeAreaView';
 import {Formik} from 'formik';
 import images from '../../../themes/Images';
-import {ForgetSchema} from './schema';
+import {VerificationSchema} from './schema';
 import {delay} from '../../../utils/customUtils';
-import {useDispatch, useSelector} from 'react-redux';
-import {recoverPassword} from '../../../redux/Action/user';
+import {useSelector} from 'react-redux';
+import {printLogs} from '../../../utils/logUtils';
 
-function ForgetPassword(props) {
-  const dispatch = useDispatch();
+function VerificationCode(props) {
   const [loading, setLoading] = useState(false);
   const userData = useSelector(state => state?.user?.users);
-  const [emailNotExist, setEmailNotExist] = useState(false);
-
-  useEffect(() => {
-    setEmailNotExist(false);
-  });
+  const recoveryData = useSelector(state => state?.user?.recoveries);
+  printLogs({recoveryData});
+  printLogs({userData});
 
   const onPressBack = () => {
-    navigateToScreen(props, MAIN_SCREEN.LOGIN);
+    navigateToScreen(props, MAIN_SCREEN.FORGET);
   };
 
   const renderTextContainer = () => {
@@ -41,10 +37,9 @@ function ForgetPassword(props) {
           color={AppStyles.colorSet.white}
           type={ICON_TYPES.FontAwesome5}
         />
-        <Text style={styles.title}>Forget Password</Text>
+        <Text style={styles.title}>Verification Code</Text>
         <Text style={styles.description}>
-          Provide your account's email for which you want to reset your
-          password...
+          Enter the email address associated with your account and Enter Code...
         </Text>
       </View>
     );
@@ -56,11 +51,13 @@ function ForgetPassword(props) {
     errors,
     touched,
     handleSubmit,
+    values,
   }) => {
     return (
       <View style={styles.buttonContainer}>
         <CustomTextInput
           placeholder={'Email'}
+          value={values?.email}
           onChangeText={handleChange('email')}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
@@ -71,14 +68,22 @@ function ForgetPassword(props) {
           touched={touched?.email}
         />
 
-        {emailNotExist && (
-          <Text style={styles.errorExist}>Email does not exist...!</Text>
-        )}
+        <CustomTextInput
+          placeholder={'Code'}
+          onChangeText={handleChange('code')}
+          inputTextStyle={{
+            color: AppStyles.colorSet.white,
+          }}
+          placeholderTextColor={AppStyles.colorSet.white}
+          onBlur={handleBlur('code')}
+          errors={errors?.code}
+          touched={touched?.code}
+        />
 
         <CustomButton
           loadingColor={AppStyles.colorSet.bgGreen}
           buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
-          title={'Next'}
+          title={'Confirm'}
           type="submit"
           onPress={handleSubmit}
           loading={loading}
@@ -87,38 +92,47 @@ function ForgetPassword(props) {
     );
   };
 
-  const key = uuid.v4();
+  const keysObject = Object.keys(recoveryData);
+  const valuesObject = Object.values(recoveryData);
 
-  const checkEmail = values => {
-    userData.map(user => {
-      if (user?.email === values?.email) {
-        dispatch(recoverPassword(user?.email, key));
-        setEmailNotExist(false);
-        navigateToScreen(props, MAIN_SCREEN.VERIFICATION_CODE);
-      } else {
-        setEmailNotExist(true);
+  const recoverEmailAndCode = keysObject.map((e, i) => {
+    return {email: e, code: valuesObject[i]};
+  });
+
+  printLogs({recovery: recoverEmailAndCode});
+
+  const verifyCode = values => {
+    recoverEmailAndCode.map(recovery => {
+      if (
+        recovery?.email === values?.email &&
+        recovery?.code === values?.code
+      ) {
+        userData.map(user => {
+          if (user?.email === recovery?.email) {
+            Alert.alert('Success', `Your password is : ${user?.password}`);
+          }
+        });
       }
     });
   };
 
   const initialValues = {
     email: '',
+    code: '',
   };
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={ForgetSchema}
+      validationSchema={VerificationSchema}
       onSubmit={async (values, resetForm) => {
         setLoading(true);
         await delay(2000);
-        checkEmail(values);
+        verifyCode(values);
         setLoading(false);
-        resetForm(initialValues);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>
           <StatusBar hidden />
-
           <VectorIconComponent
             style={styles.icon}
             name={'arrow-back'}
@@ -127,17 +141,15 @@ function ForgetPassword(props) {
             type={ICON_TYPES.IonIcons}
             onPress={onPressBack}
           />
-
           <Image source={images.rightOrange} style={styles.orangeStyle} />
-
           {renderTextContainer()}
-
           {renderFieldsContainer({
             handleChange: handleChange,
             handleBlur: handleBlur,
             errors: errors,
             touched: touched,
             handleSubmit: handleSubmit,
+            values: values,
           })}
         </SafeAreaView>
       )}
@@ -145,4 +157,4 @@ function ForgetPassword(props) {
   );
 }
 
-export default ForgetPassword;
+export default VerificationCode;

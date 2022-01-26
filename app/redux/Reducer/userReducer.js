@@ -1,21 +1,23 @@
 import {
-  CREATE_USERS,
   IS_LOGGED_IN,
   IS_SUPPORT_SCREEN,
+  RECOVER_PASSWORD,
   RESET_ERROR,
+  USERS,
 } from '../Types';
 
 const INITIAL_STATE = {
-  createUsers: [],
+  users: [],
   isLoggedIn: false,
   isSupport: false,
   error: '',
+  recoveries: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case CREATE_USERS: {
-      const alreadyExist = state?.createUsers?.find(
+    case USERS: {
+      const alreadyExist = state?.users?.find(
         user => user?.email === action?.payload?.email,
       );
       if (alreadyExist) {
@@ -24,10 +26,11 @@ export default (state = INITIAL_STATE, action) => {
           error: 'Email is already exist...',
         };
       }
-
+      const id = state?.users?.length + 1;
+      const addId = {...action?.payload, id};
       return {
         ...state,
-        createUsers: [...(state?.createUsers ?? []), action?.payload],
+        users: [...(state?.users ?? []), addId],
       };
     }
 
@@ -49,6 +52,16 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         error: '',
+      };
+    }
+
+    case RECOVER_PASSWORD: {
+      const obj1 = action?.payload;
+      const obj2 = state?.recoveries;
+      let recoveriesObject = Object.assign(obj1, obj2);
+      return {
+        ...state,
+        recoveries: recoveriesObject,
       };
     }
     default:

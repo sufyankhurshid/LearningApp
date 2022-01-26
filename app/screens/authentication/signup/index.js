@@ -20,14 +20,13 @@ import * as ImagePicker from 'react-native-image-crop-picker';
 import SafeAreaView from 'react-native/Libraries/Components/SafeAreaView/SafeAreaView';
 import {SignupSchema} from './schema';
 import MaskInput from 'react-native-mask-input/src/MaskInput';
-import {boolean} from 'yup';
 import {useDispatch, useSelector} from 'react-redux';
 import DatePicker from 'react-native-datepicker';
 import {delay} from '../../../utils/customUtils';
 import {RadioButton} from 'react-native-paper';
 import {CHOOSE_CAMERA_LIST, ICON_TYPES} from '../../../constants/constant';
 import VectorIconComponent from '../../../components/VectorIconComponent';
-import {createUsers, resetError} from '../../../redux/Action/user';
+import {resetError, users} from '../../../redux/Action/user';
 import CustomModal from '../../../components/customModal';
 import {isEmpty} from 'lodash';
 
@@ -36,6 +35,8 @@ function Signup(props) {
   const [profileImage, setProfileImage] = useState('');
   const [loading, setLoading] = useState(false);
   const error = useSelector(state => state?.user?.error) || '';
+  const usersData = useSelector(state => state?.user?.users) || [];
+
   const [openModal, setOpenModal] = useState(false);
   const lastnameRef = useRef();
   const emailRef = useRef();
@@ -54,7 +55,7 @@ function Signup(props) {
   const renderBottomContainer = () => {
     return (
       <View style={styles.footerContainer}>
-        <Text style={styles.dontHave}>Don’t have an account? </Text>
+        <Text style={styles.dontHave}>Already have an account? </Text>
         <Text
           style={styles.signUp}
           onPress={() => navigateToScreen(props, MAIN_SCREEN.LOGIN)}>
@@ -116,8 +117,11 @@ function Signup(props) {
           type={ICON_TYPES.IonIcons}
           onPress={onPressBack}
         />
+
         <Image source={images.rightOrange} style={styles.orangeStyle} />
+
         <Text style={styles.createAccount}>Create {'\n'}Account</Text>
+
         <TouchableOpacity
           style={styles.imageView}
           activeOpacity={0.3}
@@ -127,9 +131,11 @@ function Signup(props) {
             style={styles.userImage}
           />
         </TouchableOpacity>
+
         {!isEmpty(error) ? (
           <Text style={styles.errorExist}>{error}</Text>
         ) : null}
+
         <CustomTextInput
           placeholder={'First name'}
           onChangeText={handleChange('firstname')}
@@ -143,6 +149,7 @@ function Signup(props) {
           onBlur={handleBlur('firstname')}
           onSubmitEditing={() => onFocusField(lastnameRef)}
         />
+
         <CustomTextInput
           placeholder={'Last name'}
           onChangeText={handleChange('lastname')}
@@ -157,6 +164,7 @@ function Signup(props) {
           handleBlur={handleBlur('lastname')}
           onSubmitEditing={() => onFocusField(emailRef)}
         />
+
         <CustomTextInput
           placeholder={'Email'}
           value={values?.email}
@@ -171,6 +179,7 @@ function Signup(props) {
           handleBlur={handleBlur('email')}
           onSubmitEditing={() => onFocusField(passwordRef)}
         />
+
         <CustomTextInput
           placeholder={'Password'}
           value={values?.password}
@@ -186,6 +195,7 @@ function Signup(props) {
           handleBlur={handleBlur('password')}
           onSubmitEditing={() => onFocusField(confirmRef)}
         />
+
         <CustomTextInput
           placeholder={'Confirm password'}
           value={values?.confirmPassword}
@@ -201,6 +211,7 @@ function Signup(props) {
           handleBlur={handleBlur('confirmPassword')}
           onSubmitEditing={() => onFocusField(phoneRef)}
         />
+
         <MaskInput
           style={styles.input}
           value={values?.phoneNumber}
@@ -234,38 +245,47 @@ function Signup(props) {
           handleBlur={handleBlur('phoneNumber')}
           onSubmitEditing={keyboardDismiss}
         />
-        {boolean(errors?.phoneNumber && touched?.phoneNumber) ? (
+
+        {Boolean(errors?.phoneNumber) && Boolean(touched?.phoneNumber) ? (
           <Text style={styles.error}>{errors?.phoneNumber}</Text>
         ) : null}
+
         <DatePicker
           style={styles.datePicker}
           date={values?.dateOfBirth}
           mode="date"
           placeholder="Select Date of birth"
           format="YYYY-MM-DD"
-          maxDate="2000-01-01"
-          minDate="1960-01-01"
+          maxDate={new Date()}
+          // minDate="1960-01-01"
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
           onDateChange={handleChange('dateOfBirth')}
         />
+
+        {Boolean(errors?.dateOfBirth) && Boolean(touched?.dateOfBirth) ? (
+          <Text style={styles.error}>{errors?.dateOfBirth}</Text>
+        ) : null}
+
         <RadioButton.Group
           onValueChange={handleChange('gender')}
           value={values?.gender}>
           <View style={styles.radio}>
             <View style={styles.radioContainer}>
-              <RadioButton value="male" />
+              <RadioButton value="m" />
               <Text style={styles.title}>Male</Text>
             </View>
             <View style={styles.radioContainer}>
-              <RadioButton value="Female" />
+              <RadioButton value="f" />
               <Text style={styles.title}>Female</Text>
             </View>
           </View>
         </RadioButton.Group>
-        {boolean(errors?.gender && touched?.gender) ? (
+
+        {Boolean(errors?.gender) && Boolean(touched?.gender) ? (
           <Text style={styles.errorGender}>{errors?.gender}</Text>
         ) : null}
+
         <CustomButton
           loadingColor={AppStyles.colorSet.bgGreen}
           title={'SIGN UP'}
@@ -289,12 +309,11 @@ function Signup(props) {
 
   const createUser = async values => {
     await delay(2000);
-    dispatch(createUsers(values));
-    navigateToScreen(props, MAIN_SCREEN.LOGIN);
+    dispatch(users(values));
+    // navigateToScreen(props, MAIN_SCREEN.LOGIN);
   };
 
   const initialValues = {
-    id: Math.floor(Math.random() * 100),
     image: Images.addImage,
     firstname: '',
     lastname: '',
@@ -311,10 +330,16 @@ function Signup(props) {
       initialValues={initialValues}
       validationSchema={SignupSchema}
       onSubmit={async (values, {resetForm}) => {
-        let {confirmPassword, image, phoneNumber, ...val} = values;
-        const newImage = {image: profileImage.uri ?? ''};
+        let {confirmPassword, image, phoneNumber, email, ...val} = values;
+        const userEmail = email.toLowerCase();
+        const profile = profileImage.uri ?? '';
         const phonenumber = phoneNumber.replace(/[^\d]/g, '');
-        const newValues = {...val, ...newImage, phonenumber};
+        let newValues;
+        if (isEmpty(profile)) {
+          newValues = {...val, userEmail, phonenumber};
+        } else {
+          newValues = {...val, profile, userEmail, phonenumber};
+        }
         setLoading(true);
         await createUser(newValues);
         setLoading(false);
