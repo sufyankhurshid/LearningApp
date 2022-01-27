@@ -1,7 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
+  Alert,
   Image,
-  Keyboard,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -20,34 +20,21 @@ import {AppStyles, MetricsMod} from '../../../themes';
 import {LoginSchema} from './schema';
 import {useDispatch, useSelector} from 'react-redux';
 import {delay, showToast} from '../../../utils/customUtils';
-import {
-  isLoggedIn,
-  isSupportScreen,
-  resetError,
-} from '../../../redux/Action/user';
+import {blockUser, isLoggedIn, loginStatus} from '../../../redux/Action/user';
 
 function Login(props) {
   const dispatch = useDispatch();
   const userData = useSelector(state => state?.user?.users);
+  const blockUsersData = useSelector(state => state?.user?.blockUsers);
   const [loading, setLoading] = useState(false);
   const [loginFailed, setLoginFailed] = useState(0);
   const emailRef = useRef(null);
   const passRef = useRef(null);
 
-  useEffect(() => {
-    if (loginFailed > 4) {
-      navigateToScreen(props, MAIN_SCREEN.SUPPORT);
-      dispatch(isSupportScreen(true));
-    }
-  }, [loginFailed]);
-
   const onFocusField = name => {
     name?.current?.focus();
   };
 
-  const keyboardDismiss = () => {
-    Keyboard.dismiss();
-  };
   const renderFieldsContainer = ({
     handleChange,
     handleBlur,
@@ -72,6 +59,8 @@ function Login(props) {
             errors={errors?.email}
             touched={touched?.email}
             ref={emailRef}
+            returnKeyLabel={'next'}
+            returnKeyType={'next'}
             onSubmitEditing={() => onFocusField(passRef)}
           />
           <CustomTextInput
@@ -83,7 +72,9 @@ function Login(props) {
             errors={errors?.password}
             touched={touched?.password}
             ref={passRef}
-            onSubmitEditing={keyboardDismiss}
+            returnKeyLabel={'done'}
+            returnKeyType={'done'}
+            onSubmitEditing={handleSubmit}
           />
           <Text
             style={styles.forget}
@@ -118,21 +109,36 @@ function Login(props) {
     );
   };
 
+  const blockUsers = values => {
+    dispatch(blockUser({email: values?.userEmail, block: true}));
+    Alert.alert('Error', 'Your email account has been blocked...!');
+  };
+
   const login = values => {
-    userData.map(user => {
-      if (
-        user?.email === values?.email &&
-        user?.password === values?.password
-      ) {
-        dispatch(isLoggedIn(true));
-        dispatch(resetError(''));
-        showToast({type: 'success', text: 'Login Successful...👋'});
-        navigateToScreen(props, MAIN_SCREEN.HOME);
-      } else {
-        showToast({type: 'error', text: 'Login Failed...'});
-      }
-    });
-    setLoginFailed(loginFailed => loginFailed + 1);
+    if (loginFailed > 4) {
+      blockUsers(values);
+    } else {
+      blockUsersData.map(block => {
+        if (values?.userEmail === block?.email) {
+          Alert.alert('Error', 'Your email account has been blocked...!');
+        } else {
+          for (const user of userData) {
+            if (
+              user?.userEmail === values?.userEmail &&
+              user?.password === values?.password
+            ) {
+              return (
+                dispatch(isLoggedIn(true)),
+                dispatch(loginStatus(user)),
+                showToast({type: 'success', text: 'Login Successful...👋'})
+              );
+            }
+          }
+          setLoginFailed(loginFailed => loginFailed + 1);
+          showToast({type: 'error', text: 'Login Failed...'});
+        }
+      });
+    }
   };
 
   const initialValues = {
@@ -145,9 +151,13 @@ function Login(props) {
       initialValues={initialValues}
       validationSchema={LoginSchema}
       onSubmit={async (values, {resetForm}) => {
+        let {email, ...val} = values;
+        const userEmail = email.toLowerCase();
+        let newValues;
+        newValues = {...val, userEmail};
         setLoading(true);
         await delay(2000);
-        login(values);
+        login(newValues);
         setLoading(false);
         resetForm(initialValues);
       }}>

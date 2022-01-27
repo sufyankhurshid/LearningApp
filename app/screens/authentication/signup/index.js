@@ -32,11 +32,13 @@ import {isEmpty} from 'lodash';
 
 function Signup(props) {
   const dispatch = useDispatch();
-  const [profileImage, setProfileImage] = useState('');
-  const [loading, setLoading] = useState(false);
   const error = useSelector(state => state?.user?.error) || '';
   const usersData = useSelector(state => state?.user?.users) || [];
-
+  let lastCreatedUser = usersData[usersData.length - 1];
+  const [profileImage, setProfileImage] = useState({
+    uri: lastCreatedUser?.profile,
+  });
+  const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const lastnameRef = useRef();
   const emailRef = useRef();
@@ -147,6 +149,8 @@ function Signup(props) {
           errors={errors?.firstname}
           touched={touched?.firstname}
           onBlur={handleBlur('firstname')}
+          returnKeyLabel={'next'}
+          returnKeyType={'next'}
           onSubmitEditing={() => onFocusField(lastnameRef)}
         />
 
@@ -162,6 +166,8 @@ function Signup(props) {
           errors={errors?.lastname}
           touched={touched?.lastname}
           handleBlur={handleBlur('lastname')}
+          returnKeyLabel={'next'}
+          returnKeyType={'next'}
           onSubmitEditing={() => onFocusField(emailRef)}
         />
 
@@ -177,6 +183,8 @@ function Signup(props) {
           errors={errors?.email}
           touched={touched?.email}
           handleBlur={handleBlur('email')}
+          returnKeyLabel={'next'}
+          returnKeyType={'next'}
           onSubmitEditing={() => onFocusField(passwordRef)}
         />
 
@@ -193,6 +201,8 @@ function Signup(props) {
           errors={errors?.password}
           touched={touched?.password}
           handleBlur={handleBlur('password')}
+          returnKeyLabel={'next'}
+          returnKeyType={'next'}
           onSubmitEditing={() => onFocusField(confirmRef)}
         />
 
@@ -209,6 +219,8 @@ function Signup(props) {
           errors={errors?.confirmPassword}
           touched={touched?.confirmPassword}
           handleBlur={handleBlur('confirmPassword')}
+          returnKeyLabel={'next'}
+          returnKeyType={'next'}
           onSubmitEditing={() => onFocusField(phoneRef)}
         />
 
@@ -314,15 +326,15 @@ function Signup(props) {
   };
 
   const initialValues = {
-    image: Images.addImage,
-    firstname: '',
-    lastname: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phoneNumber: '',
-    dateOfBirth: '',
-    gender: '',
+    image: Images.addImage || lastCreatedUser?.profile,
+    firstname: '' || lastCreatedUser?.firstname,
+    lastname: '' || lastCreatedUser?.lastname,
+    email: '' || lastCreatedUser?.userEmail,
+    password: '' || lastCreatedUser?.password,
+    confirmPassword: '' || lastCreatedUser?.password,
+    phoneNumber: '' || lastCreatedUser?.phonenumber,
+    dateOfBirth: '' || lastCreatedUser?.dateOfBirth,
+    gender: '' || lastCreatedUser?.gender,
   };
 
   return (
@@ -338,7 +350,7 @@ function Signup(props) {
         if (isEmpty(profile)) {
           newValues = {...val, userEmail, phonenumber};
         } else {
-          newValues = {...val, profile, userEmail, phonenumber};
+          newValues = {...val, userEmail, profile, phonenumber};
         }
         setLoading(true);
         await createUser(newValues);

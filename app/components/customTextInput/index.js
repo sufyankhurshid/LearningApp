@@ -19,6 +19,9 @@ function CustomTextInput(props, ref) {
     autoFocus,
     numberOfLines,
     multiline,
+    returnKeyLabel,
+    returnKeyType,
+    onfocus,
   } = props || {};
   return (
     <>
@@ -34,10 +37,11 @@ function CustomTextInput(props, ref) {
         onBlur={onBlur}
         multiline={multiline}
         numberOfLines={numberOfLines}
-        returnKeyType={'next'}
-        returnKeyLabel={'next'}
+        returnKeyType={returnKeyType}
+        returnKeyLabel={returnKeyLabel}
         onSubmitEditing={onSubmitEditing}
         ref={ref}
+        onFocus={onfocus}
       />
       {Boolean(errors) && Boolean(touched) ? (
         <Text style={styles.error}>{errors}</Text>
