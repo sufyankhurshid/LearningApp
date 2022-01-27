@@ -64,7 +64,7 @@ export default styles = StyleSheet.create({
     fontSize: AppStyles.fontSet.smaller,
   },
   radioContainer: {
-    marginHorizontal: MetricsMod.baseMargin,
+    marginHorizontal: MetricsMod.thirty,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -73,10 +73,8 @@ export default styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: MetricsMod.thirty,
   },
   title: {
-    // width: '50%',
     fontWeight: 'bold',
     fontSize: AppStyles.fontSet.normal,
     color: AppStyles.colorSet.white,
@@ -86,12 +84,11 @@ export default styles = StyleSheet.create({
   datePicker: {
     width: '100%',
     marginHorizontal: MetricsMod.smallMargin,
-    marginTop: MetricsMod.baseMargin,
+    marginTop: MetricsMod.smallMargin,
   },
   error: {
     fontSize: AppStyles.fontSet.tiny,
     color: AppStyles.colorSet.red,
-    marginTop: MetricsMod.xSmallMarginII,
     marginLeft: MetricsMod.seven,
   },
   errorExist: {

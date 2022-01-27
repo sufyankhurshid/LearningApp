@@ -4,4 +4,6 @@ export const MAIN_SCREEN = {
   SUPPORT: 'Support',
   HOME: 'Home',
   FORGET: 'ForgetPassword',
+  VERIFICATION_CODE: 'VerificationCode',
+  CREATE_POST: 'CreatePost',
 };

@@ -3,7 +3,7 @@ import {AppStyles, MetricsMod} from '../../themes';
 
 export default styles = StyleSheet.create({
   input: {
-    height: MetricsMod.thirtyEight,
+    height: MetricsMod.fifty,
     marginHorizontal: MetricsMod.smallMargin,
     borderBottomWidth: 1,
     borderBottomColor: AppStyles.colorSet.grayII,

@@ -7,7 +7,6 @@ export default styles = StyleSheet.create({
     backgroundColor: AppStyles.colorSet.bgGreen,
   },
   textInput: {
-    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: MetricsMod.baseMargin,
@@ -42,12 +41,5 @@ export default styles = StyleSheet.create({
   icon: {
     marginTop: MetricsMod.doubleBaseMargin,
     marginLeft: MetricsMod.baseMargin,
-  },
-  errorExist: {
-    textAlign: 'center',
-    fontSize: AppStyles.fontSet.normal,
-    color: AppStyles.colorSet.red,
-    marginTop: MetricsMod.baseMargin,
-    marginLeft: MetricsMod.seven,
   },
 });

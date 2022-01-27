@@ -20,11 +20,15 @@ import {AppStyles, MetricsMod} from '../../../themes';
 import {LoginSchema} from './schema';
 import {useDispatch, useSelector} from 'react-redux';
 import {delay, showToast} from '../../../utils/customUtils';
-import {isLoggedIn, resetError} from '../../../redux/Action/user';
+import {
+  isLoggedIn,
+  isSupportScreen,
+  resetError,
+} from '../../../redux/Action/user';
 
 function Login(props) {
   const dispatch = useDispatch();
-  const userData = useSelector(state => state?.user?.createUsers);
+  const userData = useSelector(state => state?.user?.users);
   const [loading, setLoading] = useState(false);
   const [loginFailed, setLoginFailed] = useState(0);
   const emailRef = useRef(null);
@@ -51,6 +55,7 @@ function Login(props) {
     touched,
     handleSubmit,
     values,
+    setFieldTouched,
   }) => {
     return (
       <>
@@ -63,9 +68,10 @@ function Login(props) {
             placeholder={'Email'}
             value={values?.email}
             onChangeText={handleChange('email')}
-            onBlur={handleBlur('email')}
+            onBlur={() => setFieldTouched('email')}
             errors={errors?.email}
             touched={touched?.email}
+            ref={emailRef}
             onSubmitEditing={() => onFocusField(passRef)}
           />
           <CustomTextInput
@@ -73,7 +79,7 @@ function Login(props) {
             value={values?.password}
             onChangeText={handleChange('password')}
             secureTextEntry
-            onBlur={handleBlur('email')}
+            onBlur={() => setFieldTouched('password')}
             errors={errors?.password}
             touched={touched?.password}
             ref={passRef}
@@ -120,11 +126,12 @@ function Login(props) {
       ) {
         dispatch(isLoggedIn(true));
         dispatch(resetError(''));
-        // showToast({type: 'success', text: 'Login Successful...👋'});
+        showToast({type: 'success', text: 'Login Successful...👋'});
         navigateToScreen(props, MAIN_SCREEN.HOME);
+      } else {
+        showToast({type: 'error', text: 'Login Failed...'});
       }
     });
-    showToast({type: 'error', text: 'Login Failed...'});
     setLoginFailed(loginFailed => loginFailed + 1);
   };
 
@@ -144,7 +151,15 @@ function Login(props) {
         setLoading(false);
         resetForm(initialValues);
       }}>
-      {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
+      {({
+        handleChange,
+        handleBlur,
+        errors,
+        touched,
+        handleSubmit,
+        values,
+        setFieldTouched,
+      }) => (
         <SafeAreaView style={styles.container}>
           <ScrollView style={styles.container}>
             <StatusBar hidden />
@@ -155,6 +170,7 @@ function Login(props) {
               touched: touched,
               handleSubmit: handleSubmit,
               values: values,
+              setFieldTouched: setFieldTouched,
             })}
           </ScrollView>
           {renderBottomContainer()}

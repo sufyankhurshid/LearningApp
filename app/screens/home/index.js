@@ -16,11 +16,12 @@ import {useCustomFetch} from '../../hooks/useCustomFetch';
 import LoadingComponent from '../../components/LoadingComponent';
 import {FloatingAction} from 'react-native-floating-action';
 import {ACTION, ICON_TYPES} from '../../constants/constant';
-import {printLogs} from '../../utils/logUtils';
 import {AppStyles, MetricsMod} from '../../themes';
 import VectorIconComponent from '../../components/VectorIconComponent';
 import images from '../../themes/Images';
 import {isNetworkAvailable} from '../../utils/NetworkUtils';
+import {navigateToScreen} from '../../utils/navigationUtils';
+import {MAIN_SCREEN} from '../../constants/screens';
 
 function Home(props) {
   const dispatch = useDispatch();
@@ -54,6 +55,16 @@ function Home(props) {
     );
   };
 
+  const onPressItem = name => {
+    switch (name) {
+      case 'createPost':
+        navigateToScreen(props, MAIN_SCREEN.CREATE_POST);
+        break;
+      default:
+        return;
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar hidden />
@@ -79,9 +90,7 @@ function Home(props) {
       />
       <FloatingAction
         actions={ACTION}
-        onPressItem={name => {
-          printLogs(`selected button: ${name}`);
-        }}
+        onPressItem={onPressItem}
         color={AppStyles.colorSet.bgOrange}
       />
     </SafeAreaView>
