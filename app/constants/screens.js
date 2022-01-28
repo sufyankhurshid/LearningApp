@@ -6,4 +6,5 @@ export const MAIN_SCREEN = {
   FORGET: 'ForgetPassword',
   VERIFICATION_CODE: 'VerificationCode',
   CREATE_POST: 'CreatePost',
+  SHOW_DETAILS_POST: 'ShowDetailsPost',
 };

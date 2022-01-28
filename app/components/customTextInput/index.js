@@ -22,6 +22,8 @@ function CustomTextInput(props, ref) {
     returnKeyLabel,
     returnKeyType,
     onfocus,
+    selectTextOnFocus,
+    editable,
   } = props || {};
   return (
     <>
@@ -34,6 +36,8 @@ function CustomTextInput(props, ref) {
         autoFocus={autoFocus}
         placeholderTextColor={placeholderTextColor}
         secureTextEntry={secureTextEntry}
+        editable={editable}
+        selectTextOnFocus={selectTextOnFocus}
         onBlur={onBlur}
         multiline={multiline}
         numberOfLines={numberOfLines}
@@ -64,7 +68,8 @@ CustomTextInput.propTypes = {
 CustomTextInput.defaultProps = {
   placeholder: '',
   errorMessage: '',
-  onChangeText: () => {},
+  onChangeText: () => {
+  },
   secureTextEntry: false,
   inputTextStyle: {},
   autoFocus: false,

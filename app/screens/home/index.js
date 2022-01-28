@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   FlatList,
   Image,
@@ -15,17 +15,29 @@ import CustomListingComponent from '../../components/CustomListingComponent';
 import {useCustomFetch} from '../../hooks/useCustomFetch';
 import LoadingComponent from '../../components/LoadingComponent';
 import {FloatingAction} from 'react-native-floating-action';
-import {ACTION, ICON_TYPES} from '../../constants/constant';
+import {ACTION, BOTTOM_LIST, ICON_TYPES} from '../../constants/constant';
 import {AppStyles, MetricsMod} from '../../themes';
 import VectorIconComponent from '../../components/VectorIconComponent';
 import images from '../../themes/Images';
-import {isNetworkAvailable} from '../../utils/NetworkUtils';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
+import CustomBottomSheet from '../../components/customBottomSheet';
+import {delay, showToast} from '../../utils/customUtils';
 
 function Home(props) {
   const dispatch = useDispatch();
-  const isConnected = isNetworkAvailable;
+  const [bottomSheet, setBottomSheet] = useState(false);
+
+  const toggleBottomSheet = () => {
+    setBottomSheet(prevState => !prevState);
+  };
+
+  const onDeletePost = async (url, option) => {
+    const res = await fetch(url, option);
+    if (res?.ok) {
+      showToast('success', 'tem deleted successfully...');
+    }
+  };
 
   const {response, error, loading} = useCustomFetch(
     'https://jsonplaceholder.typicode.com/posts',
@@ -36,6 +48,18 @@ function Home(props) {
     dispatch(loginStatus({}));
   };
 
+  const onPressListItem = id => {
+    navigateToScreen(props, MAIN_SCREEN.SHOW_DETAILS_POST, {id});
+  };
+
+  const onPressThreeDots = async id => {
+    await delay(2000);
+    await onDeletePost(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+      method: 'DELETE',
+    });
+    setBottomSheet(false);
+  };
+
   const renderItem = item => {
     const {id, title, userId, body} = item?.item || {};
     return (
@@ -44,6 +68,8 @@ function Home(props) {
         id={id}
         title={title}
         body={body}
+        onPressItem={() => onPressListItem(id)}
+        onPressThreeDots={toggleBottomSheet}
       />
     );
   };
@@ -93,6 +119,12 @@ function Home(props) {
         actions={ACTION}
         onPressItem={onPressItem}
         color={AppStyles.colorSet.bgOrange}
+      />
+      <CustomBottomSheet
+        data={BOTTOM_LIST}
+        open={bottomSheet}
+        close={toggleBottomSheet}
+        onPress={onPressThreeDots}
       />
     </SafeAreaView>
   );

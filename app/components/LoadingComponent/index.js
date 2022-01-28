@@ -3,9 +3,9 @@ import {ActivityIndicator, View} from 'react-native';
 import styles from './styles';
 
 function LoadingComponent(props) {
-  const {loading} = props || {};
+  const {loading, containerStyle} = props || {};
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, containerStyle]}>
       {loading ? <ActivityIndicator size={'large'} /> : null}
     </View>
   );

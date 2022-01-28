@@ -34,7 +34,7 @@ function Signup(props) {
   const dispatch = useDispatch();
   const error = useSelector(state => state?.user?.error) || '';
   const usersData = useSelector(state => state?.user?.users) || [];
-  let lastCreatedUser = usersData[usersData.length - 1];
+  let lastCreatedUser = usersData[0];
   const [profileImage, setProfileImage] = useState({
     uri: lastCreatedUser?.profile,
   });
@@ -356,7 +356,7 @@ function Signup(props) {
         await createUser(newValues);
         setLoading(false);
         resetForm(initialValues);
-        setProfileImage(Images.addImage);
+        // setProfileImage(Images.addImage);
       }}>
       {({
         handleChange,

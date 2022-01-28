@@ -4,31 +4,36 @@ import {Image, SafeAreaView, StatusBar, Text, View} from 'react-native';
 import styles from './styles';
 import images from '../../themes/Images';
 import {Formik} from 'formik';
-import CustomTextInput from '../../components/customTextInput';
 import {AppStyles, MetricsMod} from '../../themes';
 import CustomButton from '../../components/CustomButton';
 import {ICON_TYPES} from '../../constants/constant';
 import VectorIconComponent from '../../components/VectorIconComponent';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
-import {CreatePostSchema} from './schema';
+import {ShowDetailPostSchema} from './schema';
 import {useSelector} from 'react-redux';
 import {printLogs} from '../../utils/logUtils';
-import {delay, showToast} from '../../utils/customUtils';
+import {getParams} from '../../utils/customUtils';
+import {useCustomFetch} from '../../hooks/useCustomFetch';
+import LoadingComponent from '../../components/LoadingComponent';
+import CustomTextInput from '../../components/customTextInput';
 
-function CreatePost(props) {
+function ShowDetailsPost(props) {
+  const {id} = getParams(props);
+  printLogs({showPostDetails: id});
+
+  const {response, error} = useCustomFetch(
+    `https://jsonplaceholder.typicode.com/posts/${id}`,
+  );
+
+  const {title, body} = response || {};
   const titleRef = useRef(null);
   const bodyRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const loginUser = useSelector(state => state?.user?.loginStatus);
 
-  const onCreatePost = async (url, option) => {
-    const res = await fetch(url, option);
-    printLogs({res});
-    if (res?.ok) {
-      showToast('success', 'Post created successfully...');
-    }
-  };
+  printLogs({response, title, body});
+  printLogs({error});
 
   const onPressBack = () => {
     navigateToScreen(props, MAIN_SCREEN.HOME);
@@ -37,6 +42,15 @@ function CreatePost(props) {
   const onFocusField = name => {
     name?.current?.focus();
   };
+
+  if (loading || error) {
+    return (
+      <LoadingComponent
+        loading={loading}
+        containerStyle={styles.emptyContainer}
+      />
+    );
+  }
 
   const renderFieldsContainer = ({
     handleChange,
@@ -48,14 +62,29 @@ function CreatePost(props) {
   }) => {
     return (
       <View style={styles.textInput}>
+        <Text style={styles.title}>ID</Text>
         <CustomTextInput
-          placeholder={'Title'}
-          onChangeText={handleChange('title')}
-          value={values?.title}
+          onChangeText={handleChange('id')}
+          value={values?.id}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
-          placeholderTextColor={AppStyles.colorSet.white}
+          onBlur={handleBlur('title')}
+          editable={false}
+          selectTextOnFocus={false}
+          errors={errors?.id}
+          touched={touched?.id}
+          returnKeyLabel={'next'}
+          returnKeyType={'next'}
+        />
+        <Text style={styles.title}>Title</Text>
+        <CustomTextInput
+          onChangeText={handleChange('title')}
+          value={values?.title || title}
+          inputTextStyle={{
+            color: AppStyles.colorSet.white,
+          }}
+          autoFocus
           onBlur={handleBlur('title')}
           errors={errors?.title}
           touched={touched?.title}
@@ -64,14 +93,13 @@ function CreatePost(props) {
           ref={titleRef}
           onSubmitEditing={() => onFocusField(bodyRef)}
         />
+        <Text style={styles.title}>Body</Text>
         <CustomTextInput
-          placeholder={'Body'}
-          value={values?.body}
+          value={values?.body || body}
           onChangeText={handleChange('body')}
-          numberOfLines={5}
+          numberOfLines={10}
           multiline
           inputTextStyle={styles.multilineTextInput}
-          placeholderTextColor={AppStyles.colorSet.white}
           onBlur={handleBlur('body')}
           errors={errors?.body}
           touched={touched?.body}
@@ -85,32 +113,16 @@ function CreatePost(props) {
   };
 
   const initialValues = {
-    title: '',
-    body: '',
+    id: id.toString(),
+    title: '' || title,
+    body: '' || body,
   };
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={CreatePostSchema}
-      onSubmit={async (values, {resetForm}) => {
-        printLogs({values});
-        setLoading(true);
-        await delay(2000);
-        await onCreatePost('https://jsonplaceholder.typicode.com/posts', {
-          method: 'POST',
-          body: JSON.stringify({
-            title: values?.title,
-            body: values?.body,
-            userId: loginUser?.id,
-          }),
-          headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-          },
-        });
-        setLoading(false);
-        resetForm(initialValues);
-      }}>
+      validationSchema={ShowDetailPostSchema}
+      onSubmit={async (values, {resetForm}) => {}}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>
           <StatusBar hidden />
@@ -122,7 +134,7 @@ function CreatePost(props) {
             type={ICON_TYPES.IonIcons}
             onPress={onPressBack}
           />
-          <Text style={styles.createAccount}>Create Post</Text>
+          <Text style={styles.createAccount}>Show Post Details</Text>
           <Image source={images.rightOrange} style={styles.orangeStyle} />
           <Image source={images.rightOrange} style={styles.orangeStyle} />
           {renderFieldsContainer({
@@ -136,7 +148,7 @@ function CreatePost(props) {
           <CustomButton
             loadingColor={AppStyles.colorSet.bgGreen}
             buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
-            title={'Create'}
+            title={'Update'}
             type="submit"
             onPress={handleSubmit}
             loading={loading}
@@ -147,4 +159,4 @@ function CreatePost(props) {
   );
 }
 
-export default CreatePost;
+export default ShowDetailsPost;

@@ -1,14 +1,14 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import styles from './styles';
 import {ICON_TYPES} from '../../constants/constant';
 import VectorIconComponent from '../VectorIconComponent';
 import {AppStyles, MetricsMod} from '../../themes';
 
 function CustomListingComponent(props) {
-  const {id, title, userId, body} = props || {};
+  const {id, title, userId, body, onPressItem, onPressThreeDots} = props || {};
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPressItem}>
       <View style={styles.innerContainer}>
         <View>
           <Text style={styles.id}>{`User ID : ${userId}`}</Text>
@@ -20,11 +20,12 @@ function CustomListingComponent(props) {
           size={MetricsMod.twentyThree}
           color={AppStyles.colorSet.white}
           type={ICON_TYPES.Entypo}
+          onPress={onPressThreeDots}
         />
       </View>
       <Text style={styles.title}>{`Title : ${title}`}</Text>
       <Text style={styles.body}>{`Body : ${body}`}</Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 

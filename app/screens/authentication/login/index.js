@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Image,
@@ -19,8 +19,9 @@ import {MAIN_SCREEN} from '../../../constants/screens';
 import {AppStyles, MetricsMod} from '../../../themes';
 import {LoginSchema} from './schema';
 import {useDispatch, useSelector} from 'react-redux';
-import {delay, showToast} from '../../../utils/customUtils';
-import {blockUser, isLoggedIn, loginStatus} from '../../../redux/Action/user';
+import {delay} from '../../../utils/customUtils';
+import {blockUser} from '../../../redux/Action/user';
+import {printLogs} from '../../../utils/logUtils';
 
 function Login(props) {
   const dispatch = useDispatch();
@@ -30,6 +31,17 @@ function Login(props) {
   const [loginFailed, setLoginFailed] = useState(0);
   const emailRef = useRef(null);
   const passRef = useRef(null);
+  const [previousValue, setPreviousValue] = useState('');
+  const [currentValue, setCurrentValue] = useState('');
+
+  useEffect(() => {
+    if (loginFailed > 4) {
+      setCurrentValue('');
+      setPreviousValue('');
+      setLoginFailed(0);
+      Alert.alert('Error', 'Your account has been blocked...');
+    }
+  }, [loginFailed]);
 
   const onFocusField = name => {
     name?.current?.focus();
@@ -114,31 +126,46 @@ function Login(props) {
     Alert.alert('Error', 'Your email account has been blocked...!');
   };
 
+  printLogs({previousValue, currentValue, loginFailed});
+
   const login = values => {
-    if (loginFailed > 4) {
-      blockUsers(values);
-    } else {
-      blockUsersData.map(block => {
-        if (values?.userEmail === block?.email) {
-          Alert.alert('Error', 'Your email account has been blocked...!');
-        } else {
-          for (const user of userData) {
-            if (
-              user?.userEmail === values?.userEmail &&
-              user?.password === values?.password
-            ) {
-              return (
-                dispatch(isLoggedIn(true)),
-                dispatch(loginStatus(user)),
-                showToast({type: 'success', text: 'Login Successful...👋'})
-              );
-            }
-          }
-          setLoginFailed(loginFailed => loginFailed + 1);
-          showToast({type: 'error', text: 'Login Failed...'});
-        }
-      });
+    const {userEmail} = values;
+    setPreviousValue(userEmail);
+    setCurrentValue(userEmail);
+    if (previousValue === currentValue) {
+      setLoginFailed(loginFailed => loginFailed + 1);
+    } else if (previousValue !== currentValue) {
+      currentValue('');
+      previousValue('');
+      setLoginFailed(0);
     }
+
+    // if (loginFailed > 4) {
+    //   printLogs({loginStatus});
+    //   printLogs({previousValue, currentValue});
+    //   // blockUsers(values);
+    // } else {
+    //   for (const block of blockUsersData) {
+    //     if (values?.userEmail === block?.email) {
+    //       Alert.alert('Error', 'Your email account has been blocked...!');
+    //       break;
+    //     } else {
+    //       for (const user of userData) {
+    //         if (
+    //           user?.userEmail === values?.userEmail &&
+    //           user?.password === values?.password
+    //         ) {
+    //           return (
+    //             dispatch(isLoggedIn(true)),
+    //             dispatch(loginStatus(user)),
+    //             showToast({type: 'success', text: 'Login Successful...👋'})
+    //           );
+    //         }
+    //       }
+    //     }
+    //   }
+    //   setLoginFailed(loginFailed => loginFailed + 1);
+    //   showToast({type: 'error', text: 'Login Failed...'});
   };
 
   const initialValues = {
