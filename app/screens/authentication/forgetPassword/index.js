@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Image, StatusBar, Text, View} from 'react-native';
 import uuid from 'react-native-uuid';
 
@@ -22,11 +22,7 @@ function ForgetPassword(props) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const userData = useSelector(state => state?.user?.users);
-  const [emailNotExist, setEmailNotExist] = useState(false);
-
-  useEffect(() => {
-    setEmailNotExist(false);
-  });
+  const [error, setError] = useState(false);
 
   const onPressBack = () => {
     navigateToScreen(props, MAIN_SCREEN.LOGIN);
@@ -56,22 +52,27 @@ function ForgetPassword(props) {
     errors,
     touched,
     handleSubmit,
+    values,
   }) => {
     return (
       <View style={styles.buttonContainer}>
         <CustomTextInput
           placeholder={'Email'}
           onChangeText={handleChange('email')}
+          value={values?.email}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
           placeholderTextColor={AppStyles.colorSet.white}
           onBlur={handleBlur('email')}
           errors={errors?.email}
+          returnKeyLabel={'done'}
+          returnKeyType={'done'}
           touched={touched?.email}
+          onSubmitEditing={handleSubmit}
         />
 
-        {emailNotExist && (
+        {error && (
           <Text style={styles.errorExist}>Email does not exist...!</Text>
         )}
 
@@ -90,15 +91,16 @@ function ForgetPassword(props) {
   const key = uuid.v4();
 
   const checkEmail = values => {
-    userData.map(user => {
-      if (user?.email === values?.email) {
-        dispatch(recoverPassword(user?.email, key));
-        setEmailNotExist(false);
-        navigateToScreen(props, MAIN_SCREEN.VERIFICATION_CODE);
-      } else {
-        setEmailNotExist(true);
+    for (const user of userData) {
+      if (user?.userEmail === values?.userEmail) {
+        return (
+          setError(false),
+          dispatch(recoverPassword(user?.userEmail, key)),
+          navigateToScreen(props, MAIN_SCREEN.VERIFICATION_CODE)
+        );
       }
-    });
+      setError(true);
+    }
   };
 
   const initialValues = {
@@ -108,10 +110,14 @@ function ForgetPassword(props) {
     <Formik
       initialValues={initialValues}
       validationSchema={ForgetSchema}
-      onSubmit={async (values, resetForm) => {
+      onSubmit={async (values, {resetForm}) => {
+        let {email, ...val} = values;
+        const userEmail = email.toLowerCase();
+        let newValues;
+        newValues = {...val, userEmail};
         setLoading(true);
         await delay(2000);
-        checkEmail(values);
+        checkEmail(newValues);
         setLoading(false);
         resetForm(initialValues);
       }}>
@@ -138,6 +144,7 @@ function ForgetPassword(props) {
             errors: errors,
             touched: touched,
             handleSubmit: handleSubmit,
+            values: values,
           })}
         </SafeAreaView>
       )}

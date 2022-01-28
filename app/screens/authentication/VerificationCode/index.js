@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Alert, Image, StatusBar, Text, View} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {Alert, Image, ScrollView, StatusBar, Text, View} from 'react-native';
 
 import styles from './styles';
 import {AppStyles, MetricsMod} from '../../../themes';
@@ -21,8 +21,8 @@ function VerificationCode(props) {
   const [loading, setLoading] = useState(false);
   const userData = useSelector(state => state?.user?.users);
   const recoveryData = useSelector(state => state?.user?.recoveries);
-  printLogs({recoveryData});
-  printLogs({userData});
+  const emailRef = useRef(null);
+  const codeRef = useRef(null);
 
   const onPressBack = () => {
     navigateToScreen(props, MAIN_SCREEN.FORGET);
@@ -43,6 +43,10 @@ function VerificationCode(props) {
         </Text>
       </View>
     );
+  };
+
+  const onFocusField = name => {
+    name?.current?.focus();
   };
 
   const renderFieldsContainer = ({
@@ -66,11 +70,16 @@ function VerificationCode(props) {
           onBlur={handleBlur('email')}
           errors={errors?.email}
           touched={touched?.email}
+          returnKeyLabel={'next'}
+          returnKeyType={'next'}
+          ref={emailRef}
+          onSubmitEditing={() => onFocusField(codeRef)}
         />
 
         <CustomTextInput
           placeholder={'Code'}
           onChangeText={handleChange('code')}
+          value={values?.code}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
@@ -78,6 +87,10 @@ function VerificationCode(props) {
           onBlur={handleBlur('code')}
           errors={errors?.code}
           touched={touched?.code}
+          returnKeyLabel={'done'}
+          returnKeyType={'done'}
+          ref={codeRef}
+          onSubmitEditing={handleSubmit}
         />
 
         <CustomButton
@@ -99,21 +112,28 @@ function VerificationCode(props) {
     return {email: e, code: valuesObject[i]};
   });
 
-  printLogs({recovery: recoverEmailAndCode});
-
   const verifyCode = values => {
-    recoverEmailAndCode.map(recovery => {
+    for (const recovery of recoverEmailAndCode) {
       if (
-        recovery?.email === values?.email &&
+        recovery?.email === values?.userEmail &&
         recovery?.code === values?.code
       ) {
         userData.map(user => {
-          if (user?.email === recovery?.email) {
-            Alert.alert('Success', `Your password is : ${user?.password}`);
+          if (user?.userEmail === recovery?.email) {
+            Alert.alert('Success', `Your password is : ${user?.password}`, [
+              {
+                text: 'Cancel',
+                onPress: () => printLogs('Cancel'),
+              },
+              {
+                text: 'Ok',
+                onPress: () => navigateToScreen(props, MAIN_SCREEN.LOGIN),
+              },
+            ]);
           }
         });
       }
-    });
+    }
   };
 
   const initialValues = {
@@ -124,33 +144,40 @@ function VerificationCode(props) {
     <Formik
       initialValues={initialValues}
       validationSchema={VerificationSchema}
-      onSubmit={async (values, resetForm) => {
+      onSubmit={async (values, {resetForm}) => {
+        let {email, ...val} = values;
+        const userEmail = email.toLowerCase();
+        let newValues;
+        newValues = {...val, userEmail};
         setLoading(true);
         await delay(2000);
-        verifyCode(values);
+        verifyCode(newValues);
         setLoading(false);
+        resetForm(initialValues);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>
-          <StatusBar hidden />
-          <VectorIconComponent
-            style={styles.icon}
-            name={'arrow-back'}
-            size={MetricsMod.forty}
-            color={AppStyles.colorSet.white}
-            type={ICON_TYPES.IonIcons}
-            onPress={onPressBack}
-          />
-          <Image source={images.rightOrange} style={styles.orangeStyle} />
-          {renderTextContainer()}
-          {renderFieldsContainer({
-            handleChange: handleChange,
-            handleBlur: handleBlur,
-            errors: errors,
-            touched: touched,
-            handleSubmit: handleSubmit,
-            values: values,
-          })}
+          <ScrollView style={styles.container}>
+            <StatusBar hidden />
+            <VectorIconComponent
+              style={styles.icon}
+              name={'arrow-back'}
+              size={MetricsMod.forty}
+              color={AppStyles.colorSet.white}
+              type={ICON_TYPES.IonIcons}
+              onPress={onPressBack}
+            />
+            <Image source={images.rightOrange} style={styles.orangeStyle} />
+            {renderTextContainer()}
+            {renderFieldsContainer({
+              handleChange: handleChange,
+              handleBlur: handleBlur,
+              errors: errors,
+              touched: touched,
+              handleSubmit: handleSubmit,
+              values: values,
+            })}
+          </ScrollView>
         </SafeAreaView>
       )}
     </Formik>

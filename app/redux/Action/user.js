@@ -1,6 +1,8 @@
 import {
+  BLOCK_USER,
   IS_LOGGED_IN,
   IS_SUPPORT_SCREEN,
+  LOGIN_STATUS,
   RECOVER_PASSWORD,
   RESET_ERROR,
   USERS,
@@ -11,6 +13,15 @@ export const users = userData => {
     dispatch({
       type: USERS,
       payload: userData,
+    });
+  };
+};
+
+export const loginStatus = status => {
+  return dispatch => {
+    dispatch({
+      type: LOGIN_STATUS,
+      payload: status,
     });
   };
 };
@@ -47,6 +58,15 @@ export const recoverPassword = (email, key) => {
     dispatch({
       type: RECOVER_PASSWORD,
       payload: {[email]: key},
+    });
+  };
+};
+
+export const blockUser = block => {
+  return dispatch => {
+    dispatch({
+      type: BLOCK_USER,
+      payload: block,
     });
   };
 };

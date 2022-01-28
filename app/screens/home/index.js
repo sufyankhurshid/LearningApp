@@ -10,7 +10,7 @@ import {
 
 import styles from './styles';
 import {useDispatch} from 'react-redux';
-import {isLoggedIn} from '../../redux/Action/user';
+import {isLoggedIn, loginStatus} from '../../redux/Action/user';
 import CustomListingComponent from '../../components/CustomListingComponent';
 import {useCustomFetch} from '../../hooks/useCustomFetch';
 import LoadingComponent from '../../components/LoadingComponent';
@@ -33,6 +33,7 @@ function Home(props) {
 
   const logout = async () => {
     await dispatch(isLoggedIn(false));
+    dispatch(loginStatus({}));
   };
 
   const renderItem = item => {

@@ -1,10 +1,9 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Image, SafeAreaView, StatusBar, Text, View} from 'react-native';
 
 import styles from './styles';
 import images from '../../themes/Images';
 import {Formik} from 'formik';
-import {delay} from '../../utils/customUtils';
 import CustomTextInput from '../../components/customTextInput';
 import {AppStyles, MetricsMod} from '../../themes';
 import CustomButton from '../../components/CustomButton';
@@ -13,12 +12,43 @@ import VectorIconComponent from '../../components/VectorIconComponent';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
 import {CreatePostSchema} from './schema';
+import {useSelector} from 'react-redux';
+import {printLogs} from '../../utils/logUtils';
 
 function CreatePost(props) {
+  const titleRef = useRef(null);
+  const bodyRef = useRef(null);
   const [loading, setLoading] = useState(false);
+  const loginUser = useSelector(state => state?.user?.loginStatus);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+
+  // const {response, error} = useCustomFetch(
+  //   'https://jsonplaceholder.typicode.com/posts',
+  //   {
+  //     method: 'POST',
+  //     body: JSON.stringify({
+  //       title: title,
+  //       body: body,
+  //       userId: loginUser?.id,
+  //     }),
+  //     headers: {
+  //       'Content-type': 'application/json; charset=UTF-8',
+  //     },
+  //   },
+  // );
+  // if (error) {
+  //   printLogs({error});
+  // } else {
+  //   printLogs({response});
+  // }
 
   const onPressBack = () => {
     navigateToScreen(props, MAIN_SCREEN.HOME);
+  };
+
+  const onFocusField = name => {
+    name?.current?.focus();
   };
 
   const renderFieldsContainer = ({
@@ -27,12 +57,14 @@ function CreatePost(props) {
     errors,
     touched,
     handleSubmit,
+    values,
   }) => {
     return (
       <View style={styles.textInput}>
         <CustomTextInput
           placeholder={'Title'}
           onChangeText={handleChange('title')}
+          value={values?.title}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
@@ -40,9 +72,14 @@ function CreatePost(props) {
           onBlur={handleBlur('title')}
           errors={errors?.title}
           touched={touched?.title}
+          returnKeyLabel={'next'}
+          returnKeyType={'next'}
+          ref={titleRef}
+          onSubmitEditing={() => onFocusField(bodyRef)}
         />
         <CustomTextInput
           placeholder={'Body'}
+          value={values?.body}
           onChangeText={handleChange('body')}
           numberOfLines={5}
           multiline
@@ -51,14 +88,10 @@ function CreatePost(props) {
           onBlur={handleBlur('body')}
           errors={errors?.body}
           touched={touched?.body}
-        />
-        <CustomButton
-          loadingColor={AppStyles.colorSet.bgOrange}
-          buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
-          title={'Next'}
-          type="submit"
-          onPress={handleSubmit}
-          loading={loading}
+          returnKeyLabel={'done'}
+          returnKeyType={'done'}
+          ref={bodyRef}
+          onSubmitEditing={handleSubmit}
         />
       </View>
     );
@@ -73,10 +106,13 @@ function CreatePost(props) {
     <Formik
       initialValues={initialValues}
       validationSchema={CreatePostSchema}
-      onSubmit={async (values, resetForm) => {
-        setLoading(true);
-        await delay(2000);
-        setLoading(false);
+      onSubmit={async (values, {resetForm}) => {
+        printLogs({values});
+        setTitle(values?.title);
+        setBody(values?.body);
+        // setLoading(true);
+        // await delay(2000);
+        // setLoading(false);
         resetForm(initialValues);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
@@ -98,8 +134,17 @@ function CreatePost(props) {
             handleBlur: handleBlur,
             errors: errors,
             touched: touched,
+            values: values,
             handleSubmit: handleSubmit,
           })}
+          <CustomButton
+            loadingColor={AppStyles.colorSet.bgGreen}
+            buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
+            title={'Create'}
+            type="submit"
+            onPress={handleSubmit}
+            loading={loading}
+          />
         </SafeAreaView>
       )}
     </Formik>

@@ -29,7 +29,6 @@ export default styles = StyleSheet.create({
   textInput: {
     paddingHorizontal: MetricsMod.baseMargin,
     paddingTop: MetricsMod.thirty,
-    paddingBottom: MetricsMod.fifty,
   },
   icon: {
     marginTop: MetricsMod.doubleBaseMargin,
