@@ -22,6 +22,7 @@ function CustomListItem(props) {
   } = props;
   return (
     <TouchableOpacity
+      activeOpacity={0.9}
       style={[styles.container, containerStyle]}
       onPress={onPress}>
       <View style={styles.innerContainer}>

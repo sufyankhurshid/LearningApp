@@ -22,7 +22,6 @@ import images from '../../themes/Images';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
 import CustomBottomSheet from '../../components/customBottomSheet';
-import {delay, showToast} from '../../utils/customUtils';
 
 function Home(props) {
   const dispatch = useDispatch();
@@ -35,7 +34,10 @@ function Home(props) {
   const onDeletePost = async (url, option) => {
     const res = await fetch(url, option);
     if (res?.ok) {
-      showToast('success', 'tem deleted successfully...');
+      Toast.show({
+        type: 'success',
+        text: 'Post deleted successfully...',
+      });
     }
   };
 
@@ -53,7 +55,6 @@ function Home(props) {
   };
 
   const onPressThreeDots = async id => {
-    await delay(2000);
     await onDeletePost(`https://jsonplaceholder.typicode.com/posts/${id}`, {
       method: 'DELETE',
     });

@@ -29,6 +29,7 @@ import VectorIconComponent from '../../../components/VectorIconComponent';
 import {resetError, users} from '../../../redux/Action/user';
 import CustomModal from '../../../components/customModal';
 import {isEmpty} from 'lodash';
+import Toast from 'react-native-toast-message';
 
 function Signup(props) {
   const dispatch = useDispatch();
@@ -322,7 +323,10 @@ function Signup(props) {
   const createUser = async values => {
     await delay(2000);
     dispatch(users(values));
-    // navigateToScreen(props, MAIN_SCREEN.LOGIN);
+    Toast.show({
+      type: 'success',
+      text: 'User created successfully...',
+    });
   };
 
   const initialValues = {

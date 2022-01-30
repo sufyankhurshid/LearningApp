@@ -3,9 +3,9 @@ import {SafeAreaView, View} from 'react-native';
 import {BottomSheet} from 'react-native-btr';
 
 import {styles} from './styles';
+import CustomListItem from '../CustomListItem';
 import {ICON_TYPES} from '../../constants/constant';
 import CustomHeader from '../CustomHeader';
-import CustomListItem from '../CustomListItem';
 
 const CustomBottomSheet = props => {
   const {open, close, onPress, data} = props || {};
@@ -18,7 +18,7 @@ const CustomBottomSheet = props => {
           onBackButtonPress={close}
           onBackdropPress={close}>
           <CustomHeader
-            title={'Options'}
+            title={'Post Options'}
             isRightIcon
             rightIconType={ICON_TYPES.Entypo}
             rightIconName={'cross'}

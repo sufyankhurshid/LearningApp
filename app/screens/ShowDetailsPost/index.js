@@ -13,27 +13,34 @@ import {MAIN_SCREEN} from '../../constants/screens';
 import {ShowDetailPostSchema} from './schema';
 import {useSelector} from 'react-redux';
 import {printLogs} from '../../utils/logUtils';
-import {getParams} from '../../utils/customUtils';
+import {delay, getParams} from '../../utils/customUtils';
 import {useCustomFetch} from '../../hooks/useCustomFetch';
-import LoadingComponent from '../../components/LoadingComponent';
 import CustomTextInput from '../../components/customTextInput';
+import Toast from 'react-native-toast-message';
 
 function ShowDetailsPost(props) {
   const {id} = getParams(props);
-  printLogs({showPostDetails: id});
+  const [loading, setLoading] = useState(false);
 
   const {response, error} = useCustomFetch(
     `https://jsonplaceholder.typicode.com/posts/${id}`,
   );
 
-  const {title, body} = response || {};
   const titleRef = useRef(null);
   const bodyRef = useRef(null);
-  const [loading, setLoading] = useState(false);
   const loginUser = useSelector(state => state?.user?.loginStatus);
 
-  printLogs({response, title, body});
-  printLogs({error});
+  const onUpdatePost = async (url, option) => {
+    printLogs('click');
+    const res = await fetch(url, option);
+    printLogs({res});
+    if (res?.ok) {
+      Toast.show({
+        type: 'success',
+        text: 'Post updated successfully...',
+      });
+    }
+  };
 
   const onPressBack = () => {
     navigateToScreen(props, MAIN_SCREEN.HOME);
@@ -42,15 +49,6 @@ function ShowDetailsPost(props) {
   const onFocusField = name => {
     name?.current?.focus();
   };
-
-  if (loading || error) {
-    return (
-      <LoadingComponent
-        loading={loading}
-        containerStyle={styles.emptyContainer}
-      />
-    );
-  }
 
   const renderFieldsContainer = ({
     handleChange,
@@ -62,25 +60,12 @@ function ShowDetailsPost(props) {
   }) => {
     return (
       <View style={styles.textInput}>
-        <Text style={styles.title}>ID</Text>
+        <Text style={styles.title}>{`ID: ${id}`}</Text>
         <CustomTextInput
-          onChangeText={handleChange('id')}
-          value={values?.id}
-          inputTextStyle={{
-            color: AppStyles.colorSet.white,
-          }}
-          onBlur={handleBlur('title')}
-          editable={false}
-          selectTextOnFocus={false}
-          errors={errors?.id}
-          touched={touched?.id}
-          returnKeyLabel={'next'}
-          returnKeyType={'next'}
-        />
-        <Text style={styles.title}>Title</Text>
-        <CustomTextInput
+          placeholder={'Title'}
+          placeholderTextColor={AppStyles.colorSet.white}
           onChangeText={handleChange('title')}
-          value={values?.title || title}
+          value={values?.title}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
@@ -93,9 +78,10 @@ function ShowDetailsPost(props) {
           ref={titleRef}
           onSubmitEditing={() => onFocusField(bodyRef)}
         />
-        <Text style={styles.title}>Body</Text>
         <CustomTextInput
-          value={values?.body || body}
+          placeholder={'Body'}
+          placeholderTextColor={AppStyles.colorSet.white}
+          value={values?.body}
           onChangeText={handleChange('body')}
           numberOfLines={10}
           multiline
@@ -108,21 +94,45 @@ function ShowDetailsPost(props) {
           ref={bodyRef}
           onSubmitEditing={handleSubmit}
         />
+        <CustomButton
+          loadingColor={AppStyles.colorSet.bgGreen}
+          buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
+          title={'Update'}
+          type="submit"
+          onPress={handleSubmit}
+          loading={loading}
+        />
       </View>
     );
   };
 
   const initialValues = {
-    id: id.toString(),
-    title: '' || title,
-    body: '' || body,
+    title: id ? response?.title : '',
+    body: id ? response?.body : '',
   };
 
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={ShowDetailPostSchema}
-      onSubmit={async (values, {resetForm}) => {}}>
+      onSubmit={async (values, {resetForm}) => {
+        printLogs({values});
+        setLoading(true);
+        await delay(2000);
+        await onUpdatePost(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({
+            id: id,
+            title: values?.title,
+            body: values?.body,
+            userId: loginUser?.id,
+          }),
+          headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+          },
+        });
+        setLoading(false);
+      }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>
           <StatusBar hidden />
@@ -145,14 +155,6 @@ function ShowDetailsPost(props) {
             values: values,
             handleSubmit: handleSubmit,
           })}
-          <CustomButton
-            loadingColor={AppStyles.colorSet.bgGreen}
-            buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
-            title={'Update'}
-            type="submit"
-            onPress={handleSubmit}
-            loading={loading}
-          />
         </SafeAreaView>
       )}
     </Formik>

@@ -94,7 +94,6 @@ function CreatePost(props) {
       initialValues={initialValues}
       validationSchema={CreatePostSchema}
       onSubmit={async (values, {resetForm}) => {
-        printLogs({values});
         setLoading(true);
         await delay(2000);
         await onCreatePost('https://jsonplaceholder.typicode.com/posts', {
