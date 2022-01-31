@@ -72,3 +72,12 @@ export const CHOOSE_CAMERA_LIST = [
     icon: 'photo',
   },
 ];
+
+export const BOTTOM_LIST = [
+  {
+    key: 'delete',
+    title: 'Delete',
+    iconType: ICON_TYPES.FontAwesome,
+    icon: 'photo',
+  },
+];

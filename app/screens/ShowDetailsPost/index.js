@@ -4,29 +4,41 @@ import {Image, SafeAreaView, StatusBar, Text, View} from 'react-native';
 import styles from './styles';
 import images from '../../themes/Images';
 import {Formik} from 'formik';
-import CustomTextInput from '../../components/customTextInput';
 import {AppStyles, MetricsMod} from '../../themes';
 import CustomButton from '../../components/CustomButton';
 import {ICON_TYPES} from '../../constants/constant';
 import VectorIconComponent from '../../components/VectorIconComponent';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
-import {CreatePostSchema} from './schema';
+import {ShowDetailPostSchema} from './schema';
 import {useSelector} from 'react-redux';
 import {printLogs} from '../../utils/logUtils';
-import {delay, showToast} from '../../utils/customUtils';
+import {delay, getParams} from '../../utils/customUtils';
+import {useCustomFetch} from '../../hooks/useCustomFetch';
+import CustomTextInput from '../../components/customTextInput';
+import Toast from 'react-native-toast-message';
 
-function CreatePost(props) {
+function ShowDetailsPost(props) {
+  const {id} = getParams(props);
+  const [loading, setLoading] = useState(false);
+
+  const {response, error} = useCustomFetch(
+    `https://jsonplaceholder.typicode.com/posts/${id}`,
+  );
+
   const titleRef = useRef(null);
   const bodyRef = useRef(null);
-  const [loading, setLoading] = useState(false);
   const loginUser = useSelector(state => state?.user?.loginStatus);
 
-  const onCreatePost = async (url, option) => {
+  const onUpdatePost = async (url, option) => {
+    printLogs('click');
     const res = await fetch(url, option);
     printLogs({res});
     if (res?.ok) {
-      showToast('success', 'Post created successfully...');
+      Toast.show({
+        type: 'success',
+        text: 'Post updated successfully...',
+      });
     }
   };
 
@@ -48,14 +60,16 @@ function CreatePost(props) {
   }) => {
     return (
       <View style={styles.textInput}>
+        <Text style={styles.title}>{`ID: ${id}`}</Text>
         <CustomTextInput
           placeholder={'Title'}
+          placeholderTextColor={AppStyles.colorSet.white}
           onChangeText={handleChange('title')}
           value={values?.title}
           inputTextStyle={{
             color: AppStyles.colorSet.white,
           }}
-          placeholderTextColor={AppStyles.colorSet.white}
+          autoFocus
           onBlur={handleBlur('title')}
           errors={errors?.title}
           touched={touched?.title}
@@ -66,12 +80,12 @@ function CreatePost(props) {
         />
         <CustomTextInput
           placeholder={'Body'}
+          placeholderTextColor={AppStyles.colorSet.white}
           value={values?.body}
           onChangeText={handleChange('body')}
-          numberOfLines={5}
+          numberOfLines={10}
           multiline
           inputTextStyle={styles.multilineTextInput}
-          placeholderTextColor={AppStyles.colorSet.white}
           onBlur={handleBlur('body')}
           errors={errors?.body}
           touched={touched?.body}
@@ -80,25 +94,35 @@ function CreatePost(props) {
           ref={bodyRef}
           onSubmitEditing={handleSubmit}
         />
+        <CustomButton
+          loadingColor={AppStyles.colorSet.bgGreen}
+          buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
+          title={'Update'}
+          type="submit"
+          onPress={handleSubmit}
+          loading={loading}
+        />
       </View>
     );
   };
 
   const initialValues = {
-    title: '',
-    body: '',
+    title: id ? response?.title : '',
+    body: id ? response?.body : '',
   };
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={CreatePostSchema}
+      validationSchema={ShowDetailPostSchema}
       onSubmit={async (values, {resetForm}) => {
+        printLogs({values});
         setLoading(true);
         await delay(2000);
-        await onCreatePost('https://jsonplaceholder.typicode.com/posts', {
-          method: 'POST',
+        await onUpdatePost(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+          method: 'PUT',
           body: JSON.stringify({
+            id: id,
             title: values?.title,
             body: values?.body,
             userId: loginUser?.id,
@@ -108,7 +132,6 @@ function CreatePost(props) {
           },
         });
         setLoading(false);
-        resetForm(initialValues);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>
@@ -121,7 +144,7 @@ function CreatePost(props) {
             type={ICON_TYPES.IonIcons}
             onPress={onPressBack}
           />
-          <Text style={styles.createAccount}>Create Post</Text>
+          <Text style={styles.createAccount}>Show Post Details</Text>
           <Image source={images.rightOrange} style={styles.orangeStyle} />
           <Image source={images.rightOrange} style={styles.orangeStyle} />
           {renderFieldsContainer({
@@ -132,18 +155,10 @@ function CreatePost(props) {
             values: values,
             handleSubmit: handleSubmit,
           })}
-          <CustomButton
-            loadingColor={AppStyles.colorSet.bgGreen}
-            buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
-            title={'Create'}
-            type="submit"
-            onPress={handleSubmit}
-            loading={loading}
-          />
         </SafeAreaView>
       )}
     </Formik>
   );
 }
 
-export default CreatePost;
+export default ShowDetailsPost;

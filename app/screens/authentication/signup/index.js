@@ -29,12 +29,13 @@ import VectorIconComponent from '../../../components/VectorIconComponent';
 import {resetError, users} from '../../../redux/Action/user';
 import CustomModal from '../../../components/customModal';
 import {isEmpty} from 'lodash';
+import Toast from 'react-native-toast-message';
 
 function Signup(props) {
   const dispatch = useDispatch();
   const error = useSelector(state => state?.user?.error) || '';
   const usersData = useSelector(state => state?.user?.users) || [];
-  let lastCreatedUser = usersData[usersData.length - 1];
+  let lastCreatedUser = usersData[0];
   const [profileImage, setProfileImage] = useState({
     uri: lastCreatedUser?.profile,
   });
@@ -322,7 +323,10 @@ function Signup(props) {
   const createUser = async values => {
     await delay(2000);
     dispatch(users(values));
-    // navigateToScreen(props, MAIN_SCREEN.LOGIN);
+    Toast.show({
+      type: 'success',
+      text: 'User created successfully...',
+    });
   };
 
   const initialValues = {
@@ -356,7 +360,7 @@ function Signup(props) {
         await createUser(newValues);
         setLoading(false);
         resetForm(initialValues);
-        setProfileImage(Images.addImage);
+        // setProfileImage(Images.addImage);
       }}>
       {({
         handleChange,

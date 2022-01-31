@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Image,
@@ -19,8 +19,9 @@ import {MAIN_SCREEN} from '../../../constants/screens';
 import {AppStyles, MetricsMod} from '../../../themes';
 import {LoginSchema} from './schema';
 import {useDispatch, useSelector} from 'react-redux';
-import {delay, showToast} from '../../../utils/customUtils';
+import {delay} from '../../../utils/customUtils';
 import {blockUser, isLoggedIn, loginStatus} from '../../../redux/Action/user';
+import Toast from 'react-native-toast-message';
 
 function Login(props) {
   const dispatch = useDispatch();
@@ -30,6 +31,15 @@ function Login(props) {
   const [loginFailed, setLoginFailed] = useState(0);
   const emailRef = useRef(null);
   const passRef = useRef(null);
+  const [preValue, setPreValue] = useState('');
+
+  useEffect(() => {
+    if (loginFailed > 4) {
+      setPreValue('');
+      setLoginFailed(0);
+      Alert.alert('Error', 'Your account has been blocked...');
+    }
+  }, [loginFailed]);
 
   const onFocusField = name => {
     name?.current?.focus();
@@ -111,6 +121,7 @@ function Login(props) {
 
   const blockUsers = values => {
     dispatch(blockUser({email: values?.userEmail, block: true}));
+    setLoginFailed(0);
     Alert.alert('Error', 'Your email account has been blocked...!');
   };
 
@@ -118,27 +129,48 @@ function Login(props) {
     if (loginFailed > 4) {
       blockUsers(values);
     } else {
-      blockUsersData.map(block => {
-        if (values?.userEmail === block?.email) {
-          Alert.alert('Error', 'Your email account has been blocked...!');
-        } else {
-          for (const user of userData) {
-            if (
-              user?.userEmail === values?.userEmail &&
-              user?.password === values?.password
-            ) {
-              return (
-                dispatch(isLoggedIn(true)),
-                dispatch(loginStatus(user)),
-                showToast({type: 'success', text: 'Login Successful...👋'})
-              );
-            }
-          }
-          setLoginFailed(loginFailed => loginFailed + 1);
-          showToast({type: 'error', text: 'Login Failed...'});
-        }
-      });
+      if (preValue === values?.userEmail) {
+        checkValidEmail(values);
+      } else {
+        setPreValue(values?.userEmail);
+        setLoginFailed(0);
+        checkValidEmail(values);
+        setLoading(false);
+      }
     }
+  };
+
+  const checkValidEmail = values => {
+    for (const block of blockUsersData) {
+      if (values?.userEmail === block?.email) {
+        Alert.alert('Error', 'Your email account has been blocked...!');
+        setLoginFailed(0);
+        setLoading(false);
+        break;
+      }
+    }
+    for (const user of userData) {
+      if (
+        user?.userEmail === values?.userEmail &&
+        user?.password === values?.password
+      ) {
+        return (
+          setLoginFailed(0),
+          dispatch(isLoggedIn(true)),
+          dispatch(loginStatus(user)),
+          Toast.show({
+            type: 'success',
+            text: 'Login Successful...👋',
+          })
+        );
+      }
+    }
+
+    setLoginFailed(loginFailed => loginFailed + 1);
+    Toast.show({
+      type: 'error',
+      text: 'Login Failed...',
+    });
   };
 
   const initialValues = {
@@ -159,7 +191,7 @@ function Login(props) {
         await delay(2000);
         login(newValues);
         setLoading(false);
-        resetForm(initialValues);
+        // resetForm(initialValues);
       }}>
       {({
         handleChange,
