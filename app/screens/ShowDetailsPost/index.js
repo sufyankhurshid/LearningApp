@@ -11,35 +11,24 @@ import VectorIconComponent from '../../components/VectorIconComponent';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
 import {ShowDetailPostSchema} from './schema';
-import {useSelector} from 'react-redux';
 import {printLogs} from '../../utils/logUtils';
 import {delay, getParams} from '../../utils/customUtils';
-import {useCustomFetch} from '../../hooks/useCustomFetch';
 import CustomTextInput from '../../components/customTextInput';
-import Toast from 'react-native-toast-message';
+import {useDispatch} from 'react-redux';
+import {updateUserPost} from '../../redux/Action/user';
 
 function ShowDetailsPost(props) {
-  const {id} = getParams(props);
+  const {item} = getParams(props);
+  const {id, userId, title, body} = item?.item || {};
   const [loading, setLoading] = useState(false);
-
-  const {response, error} = useCustomFetch(
-    `https://jsonplaceholder.typicode.com/posts/${id}`,
-  );
-
+  const dispatch = useDispatch();
   const titleRef = useRef(null);
   const bodyRef = useRef(null);
-  const loginUser = useSelector(state => state?.user?.loginStatus);
 
-  const onUpdatePost = async (url, option) => {
-    printLogs('click');
-    const res = await fetch(url, option);
-    printLogs({res});
-    if (res?.ok) {
-      Toast.show({
-        type: 'success',
-        text: 'Post updated successfully...',
-      });
-    }
+  const onUpdatePost = async values => {
+    const newValues = {userId, id, ...values};
+    dispatch(updateUserPost(newValues));
+    onPressBack();
   };
 
   const onPressBack = () => {
@@ -107,8 +96,8 @@ function ShowDetailsPost(props) {
   };
 
   const initialValues = {
-    title: id ? response?.title : '',
-    body: id ? response?.body : '',
+    title: title ? title : '',
+    body: body ? body : '',
   };
 
   return (
@@ -119,18 +108,7 @@ function ShowDetailsPost(props) {
         printLogs({values});
         setLoading(true);
         await delay(2000);
-        await onUpdatePost(`https://jsonplaceholder.typicode.com/posts/${id}`, {
-          method: 'PUT',
-          body: JSON.stringify({
-            id: id,
-            title: values?.title,
-            body: values?.body,
-            userId: loginUser?.id,
-          }),
-          headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-          },
-        });
+        await onUpdatePost(values);
         setLoading(false);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (

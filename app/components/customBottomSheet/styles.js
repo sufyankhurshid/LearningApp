@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {AppStyles, MetricsMod} from '../../themes';
+import {MetricsMod} from '../../themes';
 
 export const styles = StyleSheet.create({
   container: {
@@ -7,6 +7,5 @@ export const styles = StyleSheet.create({
     margin: MetricsMod.smallMargin,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: AppStyles.colorSet.white,
   },
 });

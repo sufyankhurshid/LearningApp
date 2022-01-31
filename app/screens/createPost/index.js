@@ -12,22 +12,24 @@ import VectorIconComponent from '../../components/VectorIconComponent';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
 import {CreatePostSchema} from './schema';
-import {useSelector} from 'react-redux';
-import {printLogs} from '../../utils/logUtils';
-import {delay, showToast} from '../../utils/customUtils';
+import {useDispatch, useSelector} from 'react-redux';
+import {delay} from '../../utils/customUtils';
+import Toast from 'react-native-toast-message';
+import {createUserPost} from '../../redux/Action/user';
 
 function CreatePost(props) {
   const titleRef = useRef(null);
   const bodyRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const loginUser = useSelector(state => state?.user?.loginStatus);
-
-  const onCreatePost = async (url, option) => {
-    const res = await fetch(url, option);
-    printLogs({res});
-    if (res?.ok) {
-      showToast('success', 'Post created successfully...');
-    }
+  const dispatch = useDispatch();
+  const onCreatePost = values => {
+    const newValues = {userId: loginUser?.id, ...values};
+    dispatch(createUserPost(newValues));
+    Toast.show({
+      type: 'success',
+      text: 'Post created successfully...👋',
+    });
   };
 
   const onPressBack = () => {
@@ -96,17 +98,7 @@ function CreatePost(props) {
       onSubmit={async (values, {resetForm}) => {
         setLoading(true);
         await delay(2000);
-        await onCreatePost('https://jsonplaceholder.typicode.com/posts', {
-          method: 'POST',
-          body: JSON.stringify({
-            title: values?.title,
-            body: values?.body,
-            userId: loginUser?.id,
-          }),
-          headers: {
-            'Content-type': 'application/json; charset=UTF-8',
-          },
-        });
+        await onCreatePost(values);
         setLoading(false);
         resetForm(initialValues);
       }}>

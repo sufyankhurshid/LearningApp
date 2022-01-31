@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Image,
   SafeAreaView,
@@ -9,11 +10,14 @@ import {
 } from 'react-native';
 
 import styles from './styles';
-import {useDispatch} from 'react-redux';
-import {isLoggedIn, loginStatus} from '../../redux/Action/user';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  deleteUserPost,
+  fetchUserPost,
+  isLoggedIn,
+  loginStatus,
+} from '../../redux/Action/user';
 import CustomListingComponent from '../../components/CustomListingComponent';
-import {useCustomFetch} from '../../hooks/useCustomFetch';
-import LoadingComponent from '../../components/LoadingComponent';
 import {FloatingAction} from 'react-native-floating-action';
 import {ACTION, BOTTOM_LIST, ICON_TYPES} from '../../constants/constant';
 import {AppStyles, MetricsMod} from '../../themes';
@@ -22,43 +26,53 @@ import images from '../../themes/Images';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
 import CustomBottomSheet from '../../components/customBottomSheet';
+import {printLogs} from '../../utils/logUtils';
+import LoadingComponent from '../../components/LoadingComponent';
+import {delay} from '../../utils/customUtils';
 
 function Home(props) {
   const dispatch = useDispatch();
   const [bottomSheet, setBottomSheet] = useState(false);
+  const posts = useSelector(state => state?.user?.fetchUserPost) || [];
+  const [loading, setLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchUserPost(posts));
+    setIsRefreshing(false);
+  }, [isRefreshing]);
 
   const toggleBottomSheet = () => {
     setBottomSheet(prevState => !prevState);
   };
 
-  const onDeletePost = async (url, option) => {
-    const res = await fetch(url, option);
-    if (res?.ok) {
-      Toast.show({
-        type: 'success',
-        text: 'Post deleted successfully...',
-      });
-    }
+  const onDeletePost = async id => {
+    setLoading(true);
+    await delay(2000);
+    dispatch(deleteUserPost(id));
+    setLoading(false);
   };
-
-  const {response, error, loading} = useCustomFetch(
-    'https://jsonplaceholder.typicode.com/posts',
-  );
 
   const logout = async () => {
     await dispatch(isLoggedIn(false));
     dispatch(loginStatus({}));
   };
 
-  const onPressListItem = id => {
-    navigateToScreen(props, MAIN_SCREEN.SHOW_DETAILS_POST, {id});
+  const onPressListItem = item => {
+    navigateToScreen(props, MAIN_SCREEN.SHOW_DETAILS_POST, {item});
   };
 
   const onPressThreeDots = async id => {
-    await onDeletePost(`https://jsonplaceholder.typicode.com/posts/${id}`, {
-      method: 'DELETE',
-    });
-    setBottomSheet(false);
+    Alert.alert('Warning', 'Are you sure, you want to delete this item', [
+      {
+        text: 'Cancel',
+        onPress: () => printLogs('Cancel'),
+      },
+      {
+        text: 'Ok',
+        onPress: () => onDeletePost(id),
+      },
+    ]);
   };
 
   const renderItem = item => {
@@ -69,16 +83,50 @@ function Home(props) {
         id={id}
         title={title}
         body={body}
-        onPressItem={() => onPressListItem(id)}
-        onPressThreeDots={toggleBottomSheet}
+        onPressItem={() => onPressListItem(item)}
+        onPressThreeDots={() => onPressThreeDots(id)}
       />
     );
+  };
+
+  const onRefresh = () => {
+    setIsRefreshing(true);
   };
 
   const renderEmptyComponent = () => {
     return (
       <View style={styles.emptyContainer}>
-        {(loading || error) && <LoadingComponent loading={loading} />}
+        {loading && (
+          <LoadingComponent
+            loading={loading}
+            color={AppStyles.colorSet.bgOrange}
+          />
+        )}
+      </View>
+    );
+  };
+
+  const renderHeaderComponent = () => {
+    return (
+      <View style={styles.emptyContainer}>
+        {loading && (
+          <LoadingComponent
+            loading={loading}
+            color={AppStyles.colorSet.bgOrange}
+          />
+        )}
+      </View>
+    );
+  };
+  const renderFooterComponent = () => {
+    return (
+      <View style={styles.emptyContainer}>
+        {loading && (
+          <LoadingComponent
+            loading={loading}
+            color={AppStyles.colorSet.bgOrange}
+          />
+        )}
       </View>
     );
   };
@@ -111,11 +159,21 @@ function Home(props) {
         contentContainerStyle={{
           flexGrow: 1,
         }}
-        data={response}
+        data={posts}
+        onRefresh={onRefresh}
+        refreshing={isRefreshing}
         renderItem={renderItem}
         ListEmptyComponent={renderEmptyComponent}
+        ListHeaderComponent={renderHeaderComponent}
+        ListFooterComponent={renderFooterComponent}
         keyExtractor={item => item.id}
       />
+      {loading && (
+        <LoadingComponent
+          loading={loading}
+          color={AppStyles.colorSet.bgGreen}
+        />
+      )}
       <FloatingAction
         actions={ACTION}
         onPressItem={onPressItem}

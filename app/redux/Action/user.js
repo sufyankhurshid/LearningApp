@@ -1,10 +1,14 @@
 import {
   BLOCK_USER,
+  CREATE_USER_POST,
+  DELETE_USER_POST,
+  FETCH_USER_POST,
   IS_LOGGED_IN,
   IS_SUPPORT_SCREEN,
   LOGIN_STATUS,
   RECOVER_PASSWORD,
   RESET_ERROR,
+  UPDATE_USER_POST,
   USERS,
 } from '../Types';
 
@@ -67,6 +71,42 @@ export const blockUser = block => {
     dispatch({
       type: BLOCK_USER,
       payload: block,
+    });
+  };
+};
+
+export const fetchUserPost = fetch => {
+  return dispatch => {
+    dispatch({
+      type: FETCH_USER_POST,
+      payload: fetch,
+    });
+  };
+};
+
+export const createUserPost = post => {
+  return dispatch => {
+    dispatch({
+      type: CREATE_USER_POST,
+      payload: post,
+    });
+  };
+};
+
+export const updateUserPost = update => {
+  return dispatch => {
+    dispatch({
+      type: UPDATE_USER_POST,
+      payload: update,
+    });
+  };
+};
+
+export const deleteUserPost = id => {
+  return dispatch => {
+    dispatch({
+      type: DELETE_USER_POST,
+      payload: id,
     });
   };
 };
