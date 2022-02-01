@@ -190,7 +190,7 @@ function Login(props) {
         await delay(2000);
         login(newValues);
         setLoading(false);
-        // resetForm(initialValues);
+        resetForm(initialValues);
       }}>
       {({
         handleChange,
