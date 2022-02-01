@@ -37,6 +37,10 @@ function Home(props) {
   const [loading, setLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // const {response, error} = useCustomFetch(
+  //   'https://jsonplaceholder.typicode.com/posts',
+  // );
+
   useEffect(() => {
     dispatch(fetchUserPost(posts));
     setIsRefreshing(false);

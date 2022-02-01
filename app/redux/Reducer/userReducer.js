@@ -8,10 +8,11 @@ import {
   LOGIN_STATUS,
   RECOVER_PASSWORD,
   RESET_ERROR,
+  UPDATE_LOGIN_STATUS,
   UPDATE_USER_POST,
+  UPDATE_USER_PROFILE,
   USERS,
 } from '../Types';
-import {printLogs} from '../../utils/logUtils';
 
 const INITIAL_STATE = {
   users: [],
@@ -37,11 +38,26 @@ export default (state = INITIAL_STATE, action) => {
         };
       }
       const id = state?.users?.length + 1;
-      const addId = {...action?.payload, id};
+      const userCode = '';
+      const addId = {...action?.payload, id, userCode};
+
       return {
         ...state,
         users: [...(state?.users ?? []), addId],
         error: '',
+      };
+    }
+
+    case UPDATE_USER_PROFILE: {
+      const update = state?.users.map(user => {
+        if (user.id === action?.payload?.id) {
+          return action?.payload;
+        }
+        return user;
+      });
+      return {
+        ...state,
+        users: update,
       };
     }
 
@@ -59,6 +75,18 @@ export default (state = INITIAL_STATE, action) => {
       };
     }
 
+    case UPDATE_LOGIN_STATUS: {
+      const update = state?.loginStatus.map(user => {
+        if (user.id === action?.payload?.id) {
+          return action?.payload;
+        }
+        return user;
+      });
+      return {
+        ...state,
+        loginStatus: update,
+      };
+    }
     case IS_LOGGED_IN: {
       return {
         ...state,
@@ -118,9 +146,7 @@ export default (state = INITIAL_STATE, action) => {
 
     case UPDATE_USER_POST: {
       const update = state?.fetchUserPost.map(post => {
-        printLogs({postAbove: post.id, action: action?.payload});
         if (post.id === action?.payload?.id) {
-          printLogs({post: post.id, action: action?.payload?.id});
           return action?.payload;
         }
         return post;

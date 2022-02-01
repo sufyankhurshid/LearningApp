@@ -10,8 +10,8 @@ export default styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    width: MetricsMod.hundredFifty,
-    height: MetricsMod.hundredSeventyFive,
+    width: MetricsMod.hundredTwenty,
+    height: MetricsMod.hundredForty,
   },
   logout: {
     position: 'absolute',

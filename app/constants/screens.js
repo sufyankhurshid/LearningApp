@@ -7,4 +7,7 @@ export const MAIN_SCREEN = {
   VERIFICATION_CODE: 'VerificationCode',
   CREATE_POST: 'CreatePost',
   SHOW_DETAILS_POST: 'ShowDetailsPost',
+  SETTING: 'Setting',
+  DELETE_ACCOUNT: 'DeleteAccount',
+  USER_CODE: 'UserCode',
 };

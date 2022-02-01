@@ -10,35 +10,42 @@ import {
 import {Formik} from 'formik';
 
 import styles from './styles';
-import images from '../../../themes/Images';
-import CustomTextInput from '../../../components/customTextInput';
-import CustomButton from '../../../components/CustomButton';
-import {AppStyles, Images, MetricsMod} from '../../../themes';
-import {navigateToScreen} from '../../../utils/navigationUtils';
-import {MAIN_SCREEN} from '../../../constants/screens';
+import images from '../../themes/Images';
+import CustomTextInput from '../../components/customTextInput';
+import CustomButton from '../../components/CustomButton';
+import {AppStyles, Images, MetricsMod} from '../../themes';
+import {navigateToScreen} from '../../utils/navigationUtils';
+import {MAIN_SCREEN} from '../../constants/screens';
 import * as ImagePicker from 'react-native-image-crop-picker';
 import SafeAreaView from 'react-native/Libraries/Components/SafeAreaView/SafeAreaView';
-import {SignupSchema} from './schema';
 import MaskInput from 'react-native-mask-input/src/MaskInput';
 import {useDispatch, useSelector} from 'react-redux';
 import DatePicker from 'react-native-datepicker';
-import {delay} from '../../../utils/customUtils';
+import {delay} from '../../utils/customUtils';
 import {RadioButton} from 'react-native-paper';
-import {CHOOSE_CAMERA_LIST, ICON_TYPES} from '../../../constants/constant';
-import VectorIconComponent from '../../../components/VectorIconComponent';
-import {resetError, users} from '../../../redux/Action/user';
-import CustomModal from '../../../components/customModal';
+import {CHOOSE_CAMERA_LIST, ICON_TYPES} from '../../constants/constant';
+import {
+  resetError,
+  updateLoginStatus,
+  updateUserProfile,
+} from '../../redux/Action/user';
+import CustomModal from '../../components/customModal';
 import {isEmpty} from 'lodash';
 import Toast from 'react-native-toast-message';
+import {SettingsSchema} from './schema';
+import VectorIconComponent from '../../components/VectorIconComponent';
+import {printLogs} from '../../utils/logUtils';
 
-function Signup(props) {
+function Setting(props) {
   const dispatch = useDispatch();
   const error = useSelector(state => state?.user?.error) || '';
-  const usersData = useSelector(state => state?.user?.users) || [];
-  let lastCreatedUser = usersData[0];
+  const loginUser = useSelector(state => state?.user?.loginStatus);
+
+  printLogs({loginUser});
   const [profileImage, setProfileImage] = useState({
-    uri: lastCreatedUser?.profile,
+    uri: loginUser?.profile,
   });
+
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const lastnameRef = useRef();
@@ -96,8 +103,8 @@ function Signup(props) {
     Keyboard.dismiss();
   };
 
-  const onPressBack = () => {
-    navigateToScreen(props, MAIN_SCREEN.LOGIN);
+  const onIconPress = () => {
+    navigateToScreen(props, MAIN_SCREEN.DELETE_ACCOUNT);
   };
 
   const renderFieldsContainer = ({
@@ -112,18 +119,16 @@ function Signup(props) {
   }) => {
     return (
       <View style={styles.textInput}>
-        <VectorIconComponent
-          style={styles.icon}
-          name={'arrow-back'}
-          size={MetricsMod.forty}
-          color={AppStyles.colorSet.white}
-          type={ICON_TYPES.IonIcons}
-          onPress={onPressBack}
-        />
-
         <Image source={images.rightOrange} style={styles.orangeStyle} />
-
-        <Text style={styles.createAccount}>Create {'\n'}Account</Text>
+        <Text style={styles.createAccount}>Settings</Text>
+        <VectorIconComponent
+          style={styles.logout}
+          name={'delete'}
+          size={MetricsMod.thirtyFive}
+          color={AppStyles.colorSet.white}
+          type={ICON_TYPES.AntDesign}
+          onPress={onIconPress}
+        />
 
         <TouchableOpacity
           style={styles.imageView}
@@ -273,6 +278,9 @@ function Signup(props) {
           // minDate="1960-01-01"
           confirmBtnText="Confirm"
           cancelBtnText="Cancel"
+          customStyles={{
+            textColor: AppStyles.colorSet.white,
+          }}
           onDateChange={handleChange('dateOfBirth')}
         />
 
@@ -301,7 +309,7 @@ function Signup(props) {
 
         <CustomButton
           loadingColor={AppStyles.colorSet.bgGreen}
-          title={'SIGN UP'}
+          title={'UPDATE'}
           buttonStyle={{
             backgroundColor: AppStyles.colorSet.bgOrange,
           }}
@@ -320,9 +328,11 @@ function Signup(props) {
     }
   };
 
-  const createUser = async values => {
+  const updateUser = async values => {
+    const newValues = {id: loginUser?.id, ...values};
     await delay(2000);
-    dispatch(users(values));
+    dispatch(updateUserProfile(newValues));
+    dispatch(updateLoginStatus(newValues));
     Toast.show({
       type: 'success',
       text: 'Account created successfully...👋',
@@ -330,21 +340,21 @@ function Signup(props) {
   };
 
   const initialValues = {
-    image: Images.addImage || lastCreatedUser?.profile,
-    firstname: '' || lastCreatedUser?.firstname,
-    lastname: '' || lastCreatedUser?.lastname,
-    email: '' || lastCreatedUser?.userEmail,
-    password: '' || lastCreatedUser?.password,
-    confirmPassword: '' || lastCreatedUser?.password,
-    phoneNumber: '' || lastCreatedUser?.phonenumber,
-    dateOfBirth: '' || lastCreatedUser?.dateOfBirth,
-    gender: '' || lastCreatedUser?.gender,
+    image: Images.addImage || loginUser?.profile,
+    firstname: '' || loginUser?.firstname,
+    lastname: '' || loginUser?.lastname,
+    email: '' || loginUser?.userEmail,
+    password: '' || loginUser?.password,
+    confirmPassword: '' || loginUser?.password,
+    phoneNumber: '' || loginUser?.phonenumber,
+    dateOfBirth: '' || loginUser?.dateOfBirth,
+    gender: '' || loginUser?.gender,
   };
 
   return (
     <Formik
       initialValues={initialValues}
-      validationSchema={SignupSchema}
+      validationSchema={SettingsSchema}
       onSubmit={async (values, {resetForm}) => {
         let {confirmPassword, image, phoneNumber, email, ...val} = values;
         const userEmail = email.toLowerCase();
@@ -357,10 +367,10 @@ function Signup(props) {
           newValues = {...val, userEmail, profile, phonenumber};
         }
         setLoading(true);
-        await createUser(newValues);
+        await updateUser(newValues);
         setLoading(false);
         resetForm(initialValues);
-        setProfileImage(Images.addImage);
+        // setProfileImage(Images.addImage);
       }}>
       {({
         handleChange,
@@ -398,4 +408,4 @@ function Signup(props) {
   );
 }
 
-export default Signup;
+export default Setting;

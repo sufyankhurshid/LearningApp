@@ -274,6 +274,7 @@ export const MetricsMod = {
   hundred: moderateScale(100),
   hundredFour: moderateScale(104),
   hundredTen: moderateScale(110),
+  hundredFive: moderateScale(105),
   hundredForty: moderateScale(140),
   hundredFifty: moderateScale(150),
   hundredSeventy: moderateScale(170),

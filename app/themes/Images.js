@@ -4,6 +4,7 @@ import fb from '../../assets/images/fbIcon.png';
 import gmail from '../../assets/images/gmailIcon.png';
 import rightOrange from '../../assets/images/rightOrange.png';
 import addImage from '../../assets/images/addImage.png';
+import plus from '../../assets/images/plus.png';
 
 const images = {
   orange,
@@ -12,6 +13,7 @@ const images = {
   gmail,
   rightOrange,
   addImage,
+  plus,
 };
 
 export default images;
