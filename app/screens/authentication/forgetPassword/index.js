@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Image, StatusBar, Text, View} from 'react-native';
+import {Alert, Image, StatusBar, Text, View} from 'react-native';
 import uuid from 'react-native-uuid';
 
 import styles from './styles';
@@ -22,7 +22,9 @@ function ForgetPassword(props) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const userData = useSelector(state => state?.user?.users);
+  const blockUsersData = useSelector(state => state?.user?.blockUsers);
   const [error, setError] = useState(false);
+  const [isBlock, setBlock] = useState(false);
 
   const onPressBack = () => {
     navigateToScreen(props, MAIN_SCREEN.LOGIN);
@@ -91,15 +93,27 @@ function ForgetPassword(props) {
   const key = uuid.v4();
 
   const checkEmail = values => {
-    for (const user of userData) {
-      if (user?.userEmail === values?.userEmail) {
+    for (const block of blockUsersData) {
+      if (values?.userEmail === block?.email) {
         return (
-          setError(false),
-          dispatch(recoverPassword(user?.userEmail, key)),
-          navigateToScreen(props, MAIN_SCREEN.VERIFICATION_CODE)
+          setBlock(true),
+          Alert.alert('Error', 'This email account is blocked...!'),
+          setLoading(false)
         );
       }
-      setError(true);
+    }
+
+    if (!isBlock) {
+      for (const user of userData) {
+        if (user?.userEmail === values?.userEmail) {
+          return (
+            setError(false),
+            dispatch(recoverPassword(user?.userEmail, key)),
+            navigateToScreen(props, MAIN_SCREEN.VERIFICATION_CODE)
+          );
+        }
+        setError(true);
+      }
     }
   };
 

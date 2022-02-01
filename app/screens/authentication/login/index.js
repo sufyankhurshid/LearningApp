@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   Alert,
   Image,
@@ -32,14 +32,7 @@ function Login(props) {
   const emailRef = useRef(null);
   const passRef = useRef(null);
   const [preValue, setPreValue] = useState('');
-
-  useEffect(() => {
-    if (loginFailed > 4) {
-      setPreValue('');
-      setLoginFailed(0);
-      Alert.alert('Error', 'Your account has been blocked...');
-    }
-  }, [loginFailed]);
+  const [isBlock, setBlock] = useState(false);
 
   const onFocusField = name => {
     name?.current?.focus();
@@ -130,46 +123,52 @@ function Login(props) {
       blockUsers(values);
     } else {
       if (preValue === values?.userEmail) {
-        checkValidEmail(values);
+        checkUserEmail(values);
+        setBlock(false);
       } else {
         setPreValue(values?.userEmail);
         setLoginFailed(0);
-        checkValidEmail(values);
+        checkUserEmail(values);
         setLoading(false);
+        setBlock(false);
       }
     }
   };
 
-  const checkValidEmail = values => {
+  const checkUserEmail = values => {
     for (const block of blockUsersData) {
       if (values?.userEmail === block?.email) {
-        Alert.alert('Error', 'Your email account has been blocked...!');
-        setLoginFailed(0);
-        setLoading(false);
-        break;
+        return (
+          setBlock(true),
+          Alert.alert('Error', 'Your email account has been blocked...!'),
+          setLoginFailed(0),
+          setLoading(false)
+        );
       }
     }
-    for (const user of userData) {
-      if (
-        user?.userEmail === values?.userEmail &&
-        user?.password === values?.password
-      ) {
-        return (
-          setLoginFailed(0),
-          dispatch(isLoggedIn(true)),
-          dispatch(loginStatus(user)),
-          Toast.show({
-            type: 'success',
-            text: 'Login Successful...👋',
-          })
-        );
+    if (!isBlock) {
+      for (const user of userData) {
+        if (
+          user?.userEmail === values?.userEmail &&
+          user?.password === values?.password
+        ) {
+          return (
+            setLoginFailed(0),
+            dispatch(isLoggedIn(true)),
+            dispatch(loginStatus(user)),
+            Toast.show({
+              type: 'success',
+              text: 'Login Successful...👋',
+            })
+          );
+        }
       }
     }
 
     setLoginFailed(loginFailed => loginFailed + 1);
     Toast.show({
       type: 'error',
-      text: 'Login Failed...',
+      text1: 'login failed...',
     });
   };
 
