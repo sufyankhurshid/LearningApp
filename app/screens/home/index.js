@@ -29,6 +29,8 @@ import CustomBottomSheet from '../../components/customBottomSheet';
 import {printLogs} from '../../utils/logUtils';
 import LoadingComponent from '../../components/LoadingComponent';
 import {delay} from '../../utils/customUtils';
+import {useCustomFetch} from '../../hooks/useCustomFetch';
+import Toast from 'react-native-toast-message';
 
 function Home(props) {
   const dispatch = useDispatch();
@@ -37,14 +39,14 @@ function Home(props) {
   const [loading, setLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // const {response, error} = useCustomFetch(
-  //   'https://jsonplaceholder.typicode.com/posts',
-  // );
+  const {response, error} = useCustomFetch(
+    'https://jsonplaceholder.typicode.com/posts',
+  );
 
   useEffect(() => {
     dispatch(fetchUserPost(posts));
     setIsRefreshing(false);
-  }, [isRefreshing]);
+  }, [isRefreshing, posts]);
 
   const toggleBottomSheet = () => {
     setBottomSheet(prevState => !prevState);
@@ -55,6 +57,10 @@ function Home(props) {
     await delay(2000);
     dispatch(deleteUserPost(id));
     setLoading(false);
+    Toast.show({
+      type: 'success',
+      text1: 'Post deleted Successfully...👋',
+    });
   };
 
   const logout = async () => {
@@ -80,16 +86,19 @@ function Home(props) {
   };
 
   const renderItem = item => {
-    const {id, title, userId, body} = item?.item || {};
+    const {id, title, userId, body, images} = item?.item || {};
     return (
-      <CustomListingComponent
-        userId={userId}
-        id={id}
-        title={title}
-        body={body}
-        onPressItem={() => onPressListItem(item)}
-        onPressThreeDots={() => onPressThreeDots(id)}
-      />
+      <>
+        <CustomListingComponent
+          userId={userId}
+          id={id}
+          title={title}
+          body={body}
+          onPressItem={() => onPressListItem(item)}
+          onPressThreeDots={() => onPressThreeDots(id)}
+          loading={loading}
+        />
+      </>
     );
   };
 
@@ -158,7 +167,6 @@ function Home(props) {
         type={ICON_TYPES.SimpleLineIcons}
         onPress={logout}
       />
-
       <FlatList
         contentContainerStyle={{
           flexGrow: 1,
@@ -168,16 +176,10 @@ function Home(props) {
         refreshing={isRefreshing}
         renderItem={renderItem}
         ListEmptyComponent={renderEmptyComponent}
-        ListHeaderComponent={renderHeaderComponent}
-        ListFooterComponent={renderFooterComponent}
+        // ListHeaderComponent={renderHeaderComponent}
+        // ListFooterComponent={renderFooterComponent}
         keyExtractor={item => item.id}
       />
-      {loading && (
-        <LoadingComponent
-          loading={loading}
-          color={AppStyles.colorSet.bgGreen}
-        />
-      )}
       <FloatingAction
         actions={ACTION}
         onPressItem={onPressItem}

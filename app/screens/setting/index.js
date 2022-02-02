@@ -24,11 +24,7 @@ import DatePicker from 'react-native-datepicker';
 import {delay} from '../../utils/customUtils';
 import {RadioButton} from 'react-native-paper';
 import {CHOOSE_CAMERA_LIST, ICON_TYPES} from '../../constants/constant';
-import {
-  resetError,
-  updateLoginStatus,
-  updateUserProfile,
-} from '../../redux/Action/user';
+import {updateLoginStatus, updateUserProfile} from '../../redux/Action/user';
 import CustomModal from '../../components/customModal';
 import {isEmpty} from 'lodash';
 import Toast from 'react-native-toast-message';
@@ -40,14 +36,13 @@ function Setting(props) {
   const dispatch = useDispatch();
   const error = useSelector(state => state?.user?.error) || '';
   const loginUser = useSelector(state => state?.user?.loginStatus);
-
-  printLogs({loginUser});
+  const userData = useSelector(state => state?.user?.users) || [];
+  const [loading, setLoading] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [profileImage, setProfileImage] = useState({
     uri: loginUser?.profile,
   });
-
-  const [loading, setLoading] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  const [user, setUser] = useState({});
   const lastnameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -55,24 +50,17 @@ function Setting(props) {
   const phoneRef = useRef();
 
   useEffect(() => {
-    dispatch(resetError(''));
+    for (const user of userData) {
+      if (user?.id === loginUser?.id) {
+        printLogs({user});
+        setUser(user);
+        break;
+      }
+    }
   }, []);
 
   const toggleModel = () => {
     setOpenModal(prevState => !prevState);
-  };
-
-  const renderBottomContainer = () => {
-    return (
-      <View style={styles.footerContainer}>
-        <Text style={styles.dontHave}>Already have an account? </Text>
-        <Text
-          style={styles.signUp}
-          onPress={() => navigateToScreen(props, MAIN_SCREEN.LOGIN)}>
-          LOGIN
-        </Text>
-      </View>
-    );
   };
 
   const takePhotoFromLibrary = async () => {
@@ -329,13 +317,17 @@ function Setting(props) {
   };
 
   const updateUser = async values => {
-    const newValues = {id: loginUser?.id, ...values};
+    const newValues = {
+      id: loginUser?.id,
+      ...values,
+      userCode: user?.userCode,
+    };
     await delay(2000);
     dispatch(updateUserProfile(newValues));
     dispatch(updateLoginStatus(newValues));
     Toast.show({
       type: 'success',
-      text: 'Account created successfully...👋',
+      text1: 'Account created successfully...👋',
     });
   };
 
@@ -370,7 +362,6 @@ function Setting(props) {
         await updateUser(newValues);
         setLoading(false);
         resetForm(initialValues);
-        // setProfileImage(Images.addImage);
       }}>
       {({
         handleChange,
@@ -401,7 +392,6 @@ function Setting(props) {
               onPress={onPressItem}
             />
           </ScrollView>
-          {renderBottomContainer()}
         </SafeAreaView>
       )}
     </Formik>

@@ -33,4 +33,22 @@ export default styles = StyleSheet.create({
     color: AppStyles.colorSet.white,
     lineHeight: MetricsMod.thirty,
   },
+  imageView: {
+    flexDirection: 'row',
+    marginHorizontal: MetricsMod.smallMargin,
+    height: MetricsMod.hundredFifty,
+    marginTop: MetricsMod.baseMargin,
+    borderWidth: 1,
+    borderColor: AppStyles.colorSet.grayII,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: MetricsMod.baseMargin,
+  },
+  userImage: {
+    borderWidth: 1,
+    marginHorizontal: MetricsMod.baseMargin,
+    width: MetricsMod.hundredFive,
+    height: MetricsMod.hundredTwenty,
+    borderColor: AppStyles.colorSet.dividerColor,
+  },
 });

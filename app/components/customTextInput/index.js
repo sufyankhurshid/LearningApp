@@ -24,6 +24,8 @@ function CustomTextInput(props, ref) {
     onfocus,
     selectTextOnFocus,
     editable,
+    keyboardType,
+    maxLength,
   } = props || {};
   return (
     <>
@@ -45,7 +47,9 @@ function CustomTextInput(props, ref) {
         returnKeyLabel={returnKeyLabel}
         onSubmitEditing={onSubmitEditing}
         ref={ref}
+        maxLength={maxLength}
         onFocus={onfocus}
+        keyboardType={keyboardType}
       />
       {Boolean(errors) && Boolean(touched) ? (
         <Text style={styles.error}>{errors}</Text>
@@ -68,8 +72,7 @@ CustomTextInput.propTypes = {
 CustomTextInput.defaultProps = {
   placeholder: '',
   errorMessage: '',
-  onChangeText: () => {
-  },
+  onChangeText: () => {},
   secureTextEntry: false,
   inputTextStyle: {},
   autoFocus: false,

@@ -1,10 +1,8 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Image, ScrollView, StatusBar, Text, View} from 'react-native';
 
 import styles from './styles';
 import {AppStyles, MetricsMod} from '../../themes';
-import {navigateToScreen} from '../../utils/navigationUtils';
-import {MAIN_SCREEN} from '../../constants/screens';
 import {ICON_TYPES} from '../../constants/constant';
 import VectorIconComponent from '../../components/VectorIconComponent';
 import CustomTextInput from '../../components/customTextInput';
@@ -14,16 +12,27 @@ import {Formik} from 'formik';
 import images from '../../themes/Images';
 import {DeleteAccountSchema} from './schema';
 import {delay} from '../../utils/customUtils';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {printLogs} from '../../utils/logUtils';
+import {
+  deleteUserAccount,
+  isLoggedIn,
+  isSupportScreen,
+} from '../../redux/Action/user';
+import Toast from 'react-native-toast-message';
 
 function DeleteAccount(props) {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const userData = useSelector(state => state?.user?.users);
+  const loginUser = useSelector(state => state?.user?.loginStatus);
   const codeRef = useRef(null);
+  const [codeFailed, setCodeFailed] = useState(0);
 
-  const onPressBack = () => {
-    navigateToScreen(props, MAIN_SCREEN.SETTING);
-  };
+  useEffect(() => {
+    if (codeFailed > 4) {
+      return setCodeFailed(0), dispatch(isSupportScreen(true));
+    }
+  }, [codeFailed]);
 
   const renderTextContainer = () => {
     return (
@@ -66,6 +75,8 @@ function DeleteAccount(props) {
           returnKeyLabel={'done'}
           returnKeyType={'done'}
           ref={codeRef}
+          maxLength={4}
+          keyboardType={'numeric'}
           onSubmitEditing={handleSubmit}
         />
 
@@ -81,11 +92,24 @@ function DeleteAccount(props) {
     );
   };
 
+  printLogs({codeFailed});
   const verifyCode = values => {
-    for (const code of userData) {
-      if (code?.userEmail === values.code) {
-      }
+    if (loginUser?.userCode === values?.code) {
+      return (
+        setCodeFailed(0),
+        dispatch(deleteUserAccount(loginUser?.id)),
+        dispatch(isLoggedIn(false)),
+        Toast.show({
+          type: 'success',
+          text1: 'Account deleted Successfully...👋',
+        })
+      );
     }
+    setCodeFailed(codeFailed => codeFailed + 1);
+    Toast.show({
+      type: 'error',
+      text1: 'Invalid code...',
+    });
   };
 
   const initialValues = {
@@ -106,14 +130,6 @@ function DeleteAccount(props) {
         <SafeAreaView style={styles.container}>
           <ScrollView style={styles.container}>
             <StatusBar hidden />
-            <VectorIconComponent
-              style={styles.icon}
-              name={'arrow-back'}
-              size={MetricsMod.forty}
-              color={AppStyles.colorSet.white}
-              type={ICON_TYPES.IonIcons}
-              onPress={onPressBack}
-            />
             <Image source={images.rightOrange} style={styles.orangeStyle} />
             {renderTextContainer()}
             {renderFieldsContainer({

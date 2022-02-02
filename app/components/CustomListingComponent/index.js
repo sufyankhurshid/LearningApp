@@ -4,9 +4,12 @@ import styles from './styles';
 import {ICON_TYPES} from '../../constants/constant';
 import VectorIconComponent from '../VectorIconComponent';
 import {AppStyles, MetricsMod} from '../../themes';
+import LoadingComponent from '../LoadingComponent';
 
 function CustomListingComponent(props) {
-  const {id, title, userId, body, onPressItem, onPressThreeDots} = props || {};
+  const {id, title, userId, body, onPressItem, onPressThreeDots, loading} =
+    props || {};
+
   return (
     <TouchableOpacity style={styles.container} onPress={onPressItem}>
       <View style={styles.innerContainer}>
@@ -25,6 +28,13 @@ function CustomListingComponent(props) {
       </View>
       <Text style={styles.title}>{`Title : ${title}`}</Text>
       <Text style={styles.body}>{`Body : ${body}`}</Text>
+      {loading && (
+        <LoadingComponent
+          loading={loading}
+          color={AppStyles.colorSet.bgOrange}
+          containerStyle={styles.emptyContainer}
+        />
+      )}
     </TouchableOpacity>
   );
 }

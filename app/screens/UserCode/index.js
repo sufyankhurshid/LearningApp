@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Image, ScrollView, StatusBar, Text, View} from 'react-native';
 
 import styles from './styles';
@@ -12,12 +12,28 @@ import {Formik} from 'formik';
 import images from '../../themes/Images';
 import {UserCodeSchema} from './schema';
 import {delay} from '../../utils/customUtils';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import BackHandler from 'react-native/Libraries/Utilities/BackHandler';
+import {addLoginStatusCode, addUserCode} from '../../redux/Action/user';
 
 function UserCode(props) {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const userData = useSelector(state => state?.user?.users);
+  const loginUser = useSelector(state => state?.user?.loginStatus);
   const codeRef = useRef(null);
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        return true;
+      },
+    );
+    return () => {
+      backHandler.remove();
+    };
+  }, []);
 
   const renderTextContainer = () => {
     return (
@@ -60,8 +76,10 @@ function UserCode(props) {
           touched={touched?.code}
           returnKeyLabel={'done'}
           returnKeyType={'done'}
+          keyboardType={'numeric'}
           ref={codeRef}
           onSubmitEditing={handleSubmit}
+          maxLength={4}
         />
 
         <CustomButton
@@ -77,8 +95,11 @@ function UserCode(props) {
   };
 
   const verifyCode = values => {
-    for (const code of userData) {
-      if (code?.userEmail === values.code) {
+    const newValues = {id: loginUser?.id, ...values};
+    for (const user of userData) {
+      if (user?.id === loginUser?.id) {
+        dispatch(addUserCode(newValues));
+        dispatch(addLoginStatusCode(newValues));
       }
     }
   };
