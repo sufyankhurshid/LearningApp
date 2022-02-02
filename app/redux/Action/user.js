@@ -8,7 +8,9 @@ import {
   LOGIN_STATUS,
   RECOVER_PASSWORD,
   RESET_ERROR,
+  UPDATE_LOGIN_STATUS,
   UPDATE_USER_POST,
+  UPDATE_USER_PROFILE,
   USERS,
 } from '../Types';
 
@@ -17,6 +19,24 @@ export const users = userData => {
     dispatch({
       type: USERS,
       payload: userData,
+    });
+  };
+};
+
+export const updateUserProfile = user => {
+  return dispatch => {
+    dispatch({
+      type: UPDATE_USER_PROFILE,
+      payload: user,
+    });
+  };
+};
+
+export const updateLoginStatus = user => {
+  return dispatch => {
+    dispatch({
+      type: UPDATE_LOGIN_STATUS,
+      payload: user,
     });
   };
 };

@@ -1,13 +1,21 @@
 import React, {useRef, useState} from 'react';
-import {Image, SafeAreaView, StatusBar, Text, View} from 'react-native';
+import {
+  Image,
+  SafeAreaView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import styles from './styles';
 import images from '../../themes/Images';
+import Images from '../../themes/Images';
 import {Formik} from 'formik';
 import CustomTextInput from '../../components/customTextInput';
 import {AppStyles, MetricsMod} from '../../themes';
 import CustomButton from '../../components/CustomButton';
-import {ICON_TYPES} from '../../constants/constant';
+import {CHOOSE_CAMERA_LIST, ICON_TYPES} from '../../constants/constant';
 import VectorIconComponent from '../../components/VectorIconComponent';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
@@ -15,6 +23,8 @@ import {CreatePostSchema} from './schema';
 import {useDispatch, useSelector} from 'react-redux';
 import {delay} from '../../utils/customUtils';
 import Toast from 'react-native-toast-message';
+import CustomModal from '../../components/customModal';
+import ImagePicker from 'react-native-image-crop-picker';
 import {createUserPost} from '../../redux/Action/user';
 
 function CreatePost(props) {
@@ -23,13 +33,80 @@ function CreatePost(props) {
   const [loading, setLoading] = useState(false);
   const loginUser = useSelector(state => state?.user?.loginStatus);
   const dispatch = useDispatch();
+  const [profileImage, setProfileImage] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
+  const toggleModel = () => {
+    setOpenModal(prevState => !prevState);
+  };
+
   const onCreatePost = values => {
-    const newValues = {userId: loginUser?.id, ...values};
+    const images = profileImage?.images || null;
+    let newValues;
+    if (images === null) {
+      newValues = {userId: loginUser?.id, ...values};
+    } else {
+      newValues = {userId: loginUser?.id, ...values, images};
+    }
     dispatch(createUserPost(newValues));
     Toast.show({
       type: 'success',
       text: 'Post created successfully...👋',
     });
+  };
+
+  const takePhotoFromLibrary = async () => {
+    const image = await ImagePicker.openPicker({
+      multiple: true,
+      waitAnimationEnd: false,
+      sortOrder: 'desc',
+      includeExif: true,
+      forceJpg: true,
+      width: MetricsMod.threeHundred,
+      height: MetricsMod.threeHundred,
+      cropping: true,
+    });
+    const images = image.map(i => {
+      return {
+        uri: i.path,
+        width: i.width,
+        height: i.height,
+        mime: i.mime,
+      };
+    });
+    setProfileImage({images});
+    setOpenModal(false);
+  };
+
+  const takePhotoFromCamera = async () => {
+    const image = await ImagePicker.openCamera({
+      multiple: true,
+      waitAnimationEnd: false,
+      sortOrder: 'desc',
+      includeExif: true,
+      forceJpg: true,
+      width: MetricsMod.threeHundred,
+      height: MetricsMod.threeHundred,
+      cropping: true,
+    });
+    const images = image.map(i => {
+      return {
+        uri: i.path,
+        width: i.width,
+        height: i.height,
+        mime: i.mime,
+      };
+    });
+    setProfileImage({images});
+    setOpenModal(false);
+  };
+
+  const onPressItem = key => {
+    if (key === 'takePhoto') {
+      takePhotoFromCamera();
+    } else {
+      takePhotoFromLibrary();
+    }
   };
 
   const onPressBack = () => {
@@ -82,6 +159,38 @@ function CreatePost(props) {
           ref={bodyRef}
           onSubmitEditing={handleSubmit}
         />
+        <TouchableOpacity
+          style={styles.imageView}
+          activeOpacity={0.3}
+          onPress={toggleModel}>
+          {profileImage?.images.map((item, index) => {
+            return (
+              <>
+                <Image
+                  key={index}
+                  source={{uri: item?.uri}}
+                  style={styles.userImage}
+                />
+              </>
+            );
+          })}
+        </TouchableOpacity>
+        {profileImage === null && (
+          <TouchableOpacity
+            style={styles.emptyImageView}
+            activeOpacity={0.3}
+            onPress={toggleModel}>
+            <Image source={Images.plus} style={styles.emptyImage} />
+          </TouchableOpacity>
+        )}
+        <CustomButton
+          loadingColor={AppStyles.colorSet.bgGreen}
+          buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
+          title={'Create'}
+          type="submit"
+          onPress={handleSubmit}
+          loading={loading}
+        />
       </View>
     );
   };
@@ -101,6 +210,7 @@ function CreatePost(props) {
         await onCreatePost(values);
         setLoading(false);
         resetForm(initialValues);
+        setProfileImage(null);
       }}>
       {({handleChange, handleBlur, errors, touched, handleSubmit, values}) => (
         <SafeAreaView style={styles.container}>
@@ -124,13 +234,11 @@ function CreatePost(props) {
             values: values,
             handleSubmit: handleSubmit,
           })}
-          <CustomButton
-            loadingColor={AppStyles.colorSet.bgGreen}
-            buttonStyle={{backgroundColor: AppStyles.colorSet.bgOrange}}
-            title={'Create'}
-            type="submit"
-            onPress={handleSubmit}
-            loading={loading}
+          <CustomModal
+            open={openModal}
+            close={toggleModel}
+            data={CHOOSE_CAMERA_LIST}
+            onPress={onPressItem}
           />
         </SafeAreaView>
       )}

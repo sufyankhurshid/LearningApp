@@ -1,6 +1,5 @@
 import {StyleSheet} from 'react-native';
-import AppStyles from '../../../themes/AppStyles';
-import {MetricsMod} from '../../../themes';
+import {AppStyles, MetricsMod} from '../../themes';
 
 export default styles = StyleSheet.create({
   container: {
@@ -16,28 +15,32 @@ export default styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     top: 0,
-    width: MetricsMod.eightyFive,
-    height: MetricsMod.hundred,
+    width: MetricsMod.hundredTwenty,
+    height: MetricsMod.hundredForty,
+  },
+  logout: {
+    position: 'absolute',
+    right: 35,
+    top: 38,
   },
   createAccount: {
-    position: 'absolute',
-    left: 10,
-    top: 70,
-    // marginLeft: MetricsMod.marginFifteen,
+    marginLeft: MetricsMod.baseMargin,
+    marginTop: MetricsMod.section,
     fontWeight: 'bold',
-    fontSize: AppStyles.fontSet.large,
+    fontSize: AppStyles.fontSet.xmlarge,
     color: AppStyles.colorSet.white,
+    lineHeight: MetricsMod.marginFortyFive,
   },
   imageView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: MetricsMod.baseMargin,
   },
   userImage: {
-    marginTop: 20,
-    width: MetricsMod.eighty,
-    height: MetricsMod.eighty,
-    borderRadius: MetricsMod.eighty / 2,
+    width: MetricsMod.hundred,
+    height: MetricsMod.hundred,
+    borderRadius: MetricsMod.hundred / 2,
     borderColor: AppStyles.colorSet.dividerColor,
     borderWidth: MetricsMod.xSmallMarginIII,
   },
@@ -105,7 +108,6 @@ export default styles = StyleSheet.create({
     color: AppStyles.colorSet.red,
     marginLeft: MetricsMod.seven,
   },
-
   input: {
     height: MetricsMod.forty,
     marginHorizontal: MetricsMod.smallMargin,

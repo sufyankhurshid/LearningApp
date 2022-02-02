@@ -11,7 +11,6 @@ import VectorIconComponent from '../../components/VectorIconComponent';
 import {navigateToScreen} from '../../utils/navigationUtils';
 import {MAIN_SCREEN} from '../../constants/screens';
 import {ShowDetailPostSchema} from './schema';
-import {printLogs} from '../../utils/logUtils';
 import {delay, getParams} from '../../utils/customUtils';
 import CustomTextInput from '../../components/customTextInput';
 import {useDispatch} from 'react-redux';
@@ -105,7 +104,6 @@ function ShowDetailsPost(props) {
       initialValues={initialValues}
       validationSchema={ShowDetailPostSchema}
       onSubmit={async (values, {resetForm}) => {
-        printLogs({values});
         setLoading(true);
         await delay(2000);
         await onUpdatePost(values);
