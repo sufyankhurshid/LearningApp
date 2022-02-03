@@ -29,8 +29,8 @@ import CustomBottomSheet from '../../components/customBottomSheet';
 import {printLogs} from '../../utils/logUtils';
 import LoadingComponent from '../../components/LoadingComponent';
 import {delay} from '../../utils/customUtils';
-import {useCustomFetch} from '../../hooks/useCustomFetch';
 import Toast from 'react-native-toast-message';
+import {useFetch} from 'use-http';
 
 function Home(props) {
   const dispatch = useDispatch();
@@ -38,9 +38,12 @@ function Home(props) {
   const posts = useSelector(state => state?.user?.fetchUserPost) || [];
   const [loading, setLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const options = {};
 
-  const {response, error} = useCustomFetch(
+  const {data = [], error} = useFetch(
     'https://jsonplaceholder.typicode.com/posts',
+    options,
+    [],
   );
 
   useEffect(() => {
@@ -94,6 +97,7 @@ function Home(props) {
           id={id}
           title={title}
           body={body}
+          images={images}
           onPressItem={() => onPressListItem(item)}
           onPressThreeDots={() => onPressThreeDots(id)}
           loading={loading}

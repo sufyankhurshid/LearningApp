@@ -20,6 +20,8 @@ import {
   isSupportScreen,
 } from '../../redux/Action/user';
 import Toast from 'react-native-toast-message';
+import {navigateToScreen} from '../../utils/navigationUtils';
+import {MAIN_SCREEN} from '../../constants/screens';
 
 function DeleteAccount(props) {
   const dispatch = useDispatch();
@@ -30,7 +32,11 @@ function DeleteAccount(props) {
 
   useEffect(() => {
     if (codeFailed > 4) {
-      return setCodeFailed(0), dispatch(isSupportScreen(true));
+      return (
+        setCodeFailed(0),
+        navigateToScreen(props, MAIN_SCREEN.SUPPORT),
+        dispatch(isSupportScreen(true))
+      );
     }
   }, [codeFailed]);
 

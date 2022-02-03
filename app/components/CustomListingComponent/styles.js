@@ -46,8 +46,8 @@ export default styles = StyleSheet.create({
   },
   userImage: {
     borderWidth: 1,
-    marginHorizontal: MetricsMod.baseMargin,
-    width: MetricsMod.hundredFive,
+    marginHorizontal: MetricsMod.smallMargin,
+    width: MetricsMod.hundred,
     height: MetricsMod.hundredTwenty,
     borderColor: AppStyles.colorSet.dividerColor,
   },

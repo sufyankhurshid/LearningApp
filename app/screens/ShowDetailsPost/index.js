@@ -25,20 +25,16 @@ import {updateUserPost} from '../../redux/Action/user';
 import ImagePicker from 'react-native-image-crop-picker';
 import CustomModal from '../../components/customModal';
 import Toast from 'react-native-toast-message';
-import {printLogs} from '../../utils/logUtils';
 
 function ShowDetailsPost(props) {
   const {item} = getParams(props);
   const {id, userId, title, body, images} = item?.item || {};
-  printLogs({images});
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const titleRef = useRef(null);
   const bodyRef = useRef(null);
   const [profileImage, setProfileImage] = useState(images || null);
   const [openModal, setOpenModal] = useState(false);
-
-  printLogs({profileImage});
 
   const toggleModel = () => {
     setOpenModal(prevState => !prevState);

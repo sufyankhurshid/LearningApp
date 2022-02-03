@@ -1,7 +1,6 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {
-  DeleteAccount,
   ForgetPassword,
   Login,
   Signup,
@@ -69,13 +68,6 @@ function AuthNavigator() {
           <Stack.Screen
             name={MAIN_SCREEN.SUPPORT}
             component={Support}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <Stack.Screen
-            name={MAIN_SCREEN.DELETE_ACCOUNT}
-            component={DeleteAccount}
             options={{
               headerShown: false,
             }}
