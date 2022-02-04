@@ -51,7 +51,7 @@ function CreatePost(props) {
     dispatch(createUserPost(newValues));
     Toast.show({
       type: 'success',
-      text: 'Post created successfully...👋',
+      text1: 'Post created successfully...👋',
     });
   };
 
@@ -165,13 +165,13 @@ function CreatePost(props) {
           onPress={toggleModel}>
           {profileImage?.images.map((item, index) => {
             return (
-              <>
+              <View key={index}>
                 <Image
                   key={index}
                   source={{uri: item?.uri}}
                   style={styles.userImage}
                 />
-              </>
+              </View>
             );
           })}
         </TouchableOpacity>
@@ -224,7 +224,6 @@ function CreatePost(props) {
             onPress={onPressBack}
           />
           <Text style={styles.createAccount}>Create Post</Text>
-          <Image source={images.rightOrange} style={styles.orangeStyle} />
           <Image source={images.rightOrange} style={styles.orangeStyle} />
           {renderFieldsContainer({
             handleChange: handleChange,

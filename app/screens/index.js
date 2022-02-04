@@ -9,6 +9,7 @@ import ShowDetailsPost from './ShowDetailsPost';
 import Setting from './setting';
 import DeleteAccount from './deleteAccount';
 import UserCode from './UserCode';
+import HooksPractice from './hooksPractice';
 
 export {
   Home,
@@ -22,4 +23,5 @@ export {
   Setting,
   DeleteAccount,
   UserCode,
+  HooksPractice,
 };

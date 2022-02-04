@@ -43,6 +43,7 @@
     "redux": "^4.1.2",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.1",
+    "use-http": "^1.0.26",
     "yup": "^0.32.11"
   },
   "devDependencies": {

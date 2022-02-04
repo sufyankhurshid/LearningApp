@@ -1,6 +1,9 @@
 import {
+  ADD_LOGIN_STATUS_CODE,
+  ADD_USER_CODE,
   BLOCK_USER,
   CREATE_USER_POST,
+  DELETE_USER_ACCOUNT,
   DELETE_USER_POST,
   FETCH_USER_POST,
   IS_LOGGED_IN,
@@ -127,6 +130,33 @@ export const deleteUserPost = id => {
     dispatch({
       type: DELETE_USER_POST,
       payload: id,
+    });
+  };
+};
+
+export const deleteUserAccount = id => {
+  return dispatch => {
+    dispatch({
+      type: DELETE_USER_ACCOUNT,
+      payload: id,
+    });
+  };
+};
+
+export const addUserCode = code => {
+  return dispatch => {
+    return dispatch({
+      type: ADD_USER_CODE,
+      payload: code,
+    });
+  };
+};
+
+export const addLoginStatusCode = code => {
+  return dispatch => {
+    return dispatch({
+      type: ADD_LOGIN_STATUS_CODE,
+      payload: code,
     });
   };
 };

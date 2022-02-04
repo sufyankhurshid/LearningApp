@@ -35,7 +35,7 @@ export default styles = StyleSheet.create({
     marginLeft: MetricsMod.baseMargin,
   },
   multilineTextInput: {
-    height: MetricsMod.twoFifty,
+    height: MetricsMod.hundred,
     color: AppStyles.colorSet.white,
     textAlignVertical: 'top',
   },
@@ -45,5 +45,34 @@ export default styles = StyleSheet.create({
     fontSize: AppStyles.fontSet.normal,
     color: AppStyles.colorSet.white,
     lineHeight: MetricsMod.section,
+  },
+  imageView: {
+    flexDirection: 'row',
+    marginHorizontal: MetricsMod.smallMargin,
+    height: MetricsMod.hundredFifty,
+    marginTop: MetricsMod.baseMargin,
+    borderBottomWidth: 1,
+    borderBottomColor: AppStyles.colorSet.grayII,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: MetricsMod.baseMargin,
+  },
+  userImage: {
+    borderWidth: 1,
+    marginHorizontal: MetricsMod.baseMargin,
+    width: MetricsMod.hundredFive,
+    height: MetricsMod.hundredTwenty,
+    borderColor: AppStyles.colorSet.dividerColor,
+  },
+  emptyImageView: {
+    position: 'absolute',
+    top: 250,
+    left: 150,
+  },
+  emptyImage: {
+    borderWidth: 1,
+    marginHorizontal: MetricsMod.baseMargin,
+    width: MetricsMod.hundredFive,
+    height: MetricsMod.hundredTwenty,
   },
 });

@@ -4,6 +4,7 @@ import {
   CreatePost,
   DeleteAccount,
   Home,
+  HooksPractice,
   Setting,
   ShowDetailsPost,
   UserCode,
@@ -11,14 +12,16 @@ import {
 import {MAIN_SCREEN} from '../constants/screens';
 import BottomTab from './bottomTabNavigator';
 import {isEmpty} from 'lodash';
+import {useSelector} from 'react-redux';
+import Support from '../screens/authentication/support';
 
 const Stack = createNativeStackNavigator();
-const userCode = '2345';
 
 function MainStackNavigator() {
+  const loginUser = useSelector(state => state?.user?.loginStatus);
   return (
     <>
-      {!isEmpty(userCode) && (
+      {!isEmpty(loginUser?.userCode) && (
         <Stack.Navigator
           initialRouteName={'tab'}
           screenOptions={{
@@ -66,9 +69,23 @@ function MainStackNavigator() {
               headerShown: false,
             }}
           />
+          <Stack.Screen
+            name={MAIN_SCREEN.HOOK_PRACTICE}
+            component={HooksPractice}
+            options={{
+              headerShown: true,
+            }}
+          />
+          <Stack.Screen
+            name={MAIN_SCREEN.SUPPORT}
+            component={Support}
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack.Navigator>
       )}
-      {isEmpty(userCode) && (
+      {isEmpty(loginUser?.userCode) && (
         <Stack.Navigator
           initialRouteName={MAIN_SCREEN.USER_CODE}
           screenOptions={{

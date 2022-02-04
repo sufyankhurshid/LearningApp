@@ -10,4 +10,5 @@ export const MAIN_SCREEN = {
   SETTING: 'Setting',
   DELETE_ACCOUNT: 'DeleteAccount',
   USER_CODE: 'UserCode',
+  HOOK_PRACTICE: 'HooksPractice',
 };

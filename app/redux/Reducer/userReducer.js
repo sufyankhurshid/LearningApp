@@ -1,6 +1,9 @@
 import {
+  ADD_LOGIN_STATUS_CODE,
+  ADD_USER_CODE,
   BLOCK_USER,
   CREATE_USER_POST,
+  DELETE_USER_ACCOUNT,
   DELETE_USER_POST,
   FETCH_USER_POST,
   IS_LOGGED_IN,
@@ -13,6 +16,7 @@ import {
   UPDATE_USER_PROFILE,
   USERS,
 } from '../Types';
+import {printLogs} from '../../utils/logUtils';
 
 const INITIAL_STATE = {
   users: [],
@@ -61,6 +65,17 @@ export default (state = INITIAL_STATE, action) => {
       };
     }
 
+    case DELETE_USER_ACCOUNT: {
+      const newArray = state?.users?.filter(
+        user => user?.id !== action?.payload,
+      );
+      printLogs({newArray});
+      return {
+        ...state,
+        users: newArray,
+      };
+    }
+
     case LOGIN_STATUS: {
       return {
         ...state,
@@ -76,17 +91,12 @@ export default (state = INITIAL_STATE, action) => {
     }
 
     case UPDATE_LOGIN_STATUS: {
-      const update = state?.loginStatus.map(user => {
-        if (user.id === action?.payload?.id) {
-          return action?.payload;
-        }
-        return user;
-      });
       return {
         ...state,
-        loginStatus: update,
+        loginStatus: action?.payload,
       };
     }
+
     case IS_LOGGED_IN: {
       return {
         ...state,
@@ -164,6 +174,24 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         fetchUserPost: newArray,
+      };
+    }
+
+    case ADD_USER_CODE: {
+      return {
+        ...state,
+        users: state?.users.map(user =>
+          user.id === action?.payload?.id
+            ? {...user, userCode: action?.payload?.code}
+            : user,
+        ),
+      };
+    }
+
+    case ADD_LOGIN_STATUS_CODE: {
+      return {
+        ...state,
+        loginStatus: {...state?.loginStatus, userCode: action?.payload?.code},
       };
     }
 

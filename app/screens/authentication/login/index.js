@@ -158,7 +158,7 @@ function Login(props) {
             dispatch(loginStatus(user)),
             Toast.show({
               type: 'success',
-              text: 'Login Successful...👋',
+              text1: 'Login Successful...👋',
             })
           );
         }

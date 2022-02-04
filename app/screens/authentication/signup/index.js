@@ -325,7 +325,7 @@ function Signup(props) {
     dispatch(users(values));
     Toast.show({
       type: 'success',
-      text: 'Account created successfully...👋',
+      text1: 'Account created successfully...👋',
     });
   };
 
