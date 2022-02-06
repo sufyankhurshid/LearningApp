@@ -11,4 +11,5 @@ export const MAIN_SCREEN = {
   DELETE_ACCOUNT: 'DeleteAccount',
   USER_CODE: 'UserCode',
   HOOK_PRACTICE: 'HooksPractice',
+  TODO: 'Todo',
 };

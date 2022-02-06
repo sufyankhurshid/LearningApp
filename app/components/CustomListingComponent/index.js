@@ -8,22 +8,25 @@ import LoadingComponent from '../LoadingComponent';
 
 function CustomListingComponent(props) {
   const {
-    id = '',
-    title = '',
-    userId = '',
-    body = '',
+    id,
+    title,
+    userId,
+    body,
     onPressItem = () => {},
     onPressThreeDots = () => {},
     loading = false,
     images,
+    containerStyle,
   } = props || {};
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPressItem}>
+    <TouchableOpacity
+      style={[styles.container, containerStyle]}
+      onPress={onPressItem}>
       <View style={styles.innerContainer}>
         <View>
-          <Text style={styles.id}>{`User ID : ${userId}`}</Text>
-          <Text style={styles.title}>{`ID : ${id}`}</Text>
+          {userId && <Text style={styles.id}>{`User ID : ${userId}`}</Text>}
+          {id && <Text style={styles.title}>{`ID : ${id}`}</Text>}
         </View>
         <VectorIconComponent
           style={styles.icon}
@@ -34,8 +37,8 @@ function CustomListingComponent(props) {
           onPress={onPressThreeDots}
         />
       </View>
-      <Text style={styles.title}>{`Title : ${title}`}</Text>
-      <Text style={styles.body}>{`Body : ${body}`}</Text>
+      {title && <Text style={styles.title}>{`Title : ${title}`}</Text>}
+      {body && <Text style={styles.body}>{`Body : ${body}`}</Text>}
       {loading && (
         <LoadingComponent
           loading={loading}

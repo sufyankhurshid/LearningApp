@@ -1,6 +1,5 @@
-import {Dimensions, Platform, StyleSheet} from 'react-native';
-import {moderateScale, scale} from 'react-native-size-matters';
-import {MetricsHorizontal, MetricsMod} from './index';
+import {Dimensions} from 'react-native';
+import {scale} from 'react-native-size-matters';
 // local imports
 
 const WINDOW_WIDTH = Dimensions.get('window').width;
@@ -215,26 +214,6 @@ const colorSet = {
   purpleAlpha: 'rgba(146, 6, 228, 0.15)',
 };
 
-const navThemeConstants = {
-  light: {
-    backgroundColor: '#fff',
-    fontColor: '#000',
-    activeTintColor: '#3875e8',
-    inactiveTintColor: '#ccc',
-    hairlineColor: '#e0e0e0',
-    inputFormattingDirCol: 'red',
-  },
-  dark: {
-    backgroundColor: '#000',
-    fontColor: '#ffffff',
-    activeTintColor: '#3875e8',
-    inactiveTintColor: '#888',
-    hairlineColor: '#222222',
-    inputFormattingDirCol: 'white',
-  },
-  main: '#3875e8',
-};
-
 const fontSet = {
   xxxlarge: scale(50),
   xxlarge: scale(40),
@@ -267,158 +246,9 @@ const fontSet = {
   content: scale(20),
 };
 
-const loadingModal = {
-  color: '#FFFFFF',
-  size: 20,
-  overlayColor: 'rgba(0,0,0,0.5)',
-  closeOnTouch: false,
-  loadingType: 'Spinner', // 'Bubbles', 'DoubleBounce', 'Bars', 'Pulse', 'Spinner'
-};
-
-const sizeSet = {
-  buttonWidth: '70%',
-  inputWidth: '80%',
-  radius: 25,
-};
-
-const styleSet = {
-  menuBtn: {
-    container: {
-      backgroundColor: colorSet.grayBgColor,
-      borderRadius: 22.5,
-      padding: 10,
-      marginLeft: 10,
-      marginRight: 10,
-    },
-    icon: {
-      tintColor: 'black',
-      width: 15,
-      height: 15,
-    },
-  },
-  searchBar: {
-    container: {
-      marginLeft: Platform.OS === 'ios' ? 30 : 0,
-      backgroundColor: 'transparent',
-      borderBottomColor: 'transparent',
-      borderTopColor: 'transparent',
-      flex: 1,
-    },
-    input: {
-      backgroundColor: colorSet.inputBgColor,
-      borderRadius: 10,
-      color: 'black',
-    },
-  },
-  rightNavButton: {
-    marginRight: 10,
-  },
-  borderRadius: {
-    main: 25,
-    small: 5,
-  },
-  textInputWidth: {
-    main: '80%',
-  },
-  bottomRightActionBtn: {
-    position: 'absolute',
-    right: moderateScale(20),
-    bottom: moderateScale(20),
-  },
-  background: {
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colorSet.purple,
-  },
-  input: {
-    minHeight: moderateScale(45),
-    paddingHorizontal: moderateScale(15),
-  },
-  inputMultiLine: {
-    minHeight: moderateScale(45),
-    paddingHorizontal: moderateScale(15),
-    ...Platform.select({
-      ios: {
-        paddingTop: moderateScale(10),
-      },
-    }),
-  },
-  listContentContainer: {
-    flexGrow: 1,
-  },
-  settingsCommon: {
-    fontSize: fontSet.small,
-    color: colorSet.greyishIV,
-    backgroundColor: 'transparent',
-    textAlignVertical: 'center',
-    paddingVertical: MetricsMod.baseMarginIII,
-    paddingHorizontal: MetricsHorizontal.marginFifteen,
-    textTransform: 'uppercase',
-  },
-  settingTopBottomWidth: {
-    marginTop: MetricsMod.baseMarginII,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colorSet.dividerColor,
-    backgroundColor: colorSet.white,
-  },
-  settingSectionTopMargin: {
-    marginTop: MetricsMod.fortyTwo,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colorSet.dividerColor,
-    backgroundColor: colorSet.white,
-  },
-  settingCommonBackground: {
-    flex: 1,
-    backgroundColor: colorSet.offWhite,
-  },
-  settingCommonTitleStyle: {
-    fontSize: fontSet.small,
-    color: colorSet.greyishIV,
-    textTransform: 'uppercase',
-    marginLeft: scale(15),
-  },
-  settingCommonMarginTop: {
-    marginTop: MetricsMod.twentyEight,
-  },
-  settingCommonSearchContainer: {
-    marginVertical: MetricsMod.marginFifteen,
-  },
-  settingCommonListItem: {
-    color: colorSet.blackN,
-    fontSize: fontSet.small,
-  },
-  settingCommonListLeftRightItem: {
-    flex: 1,
-    color: colorSet.blackN,
-    fontSize: fontSet.small,
-  },
-  borderTop: {
-    borderTopWidth: MetricsMod.horizontalLineHeight,
-    borderTopColor: colorSet.dividerColor,
-  },
-  borderBottom: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colorSet.dividerColor,
-  },
-  borderTopBottom: {
-    borderBottomWidth: MetricsMod.horizontalLineHeight,
-    borderBottomColor: colorSet.dividerColor,
-    borderTopWidth: MetricsMod.horizontalLineHeight,
-    borderTopColor: colorSet.dividerColor,
-  },
-};
-
 const StyleDict = {
   colorSet,
-  navThemeConstants,
   fontSet,
-  sizeSet,
-  styleSet,
-  loadingModal,
   WINDOW_WIDTH,
   WINDOW_HEIGHT,
 };

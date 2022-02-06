@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {ICON_TYPES} from '../constants/constant';
-import {Home, Setting} from '../screens';
+import {Home, Setting, Todo} from '../screens';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {MAIN_SCREEN} from '../constants/screens';
 import VectorIconComponent from '../components/VectorIconComponent';
@@ -20,6 +20,10 @@ export default function BottomTab() {
             iconName = focused ? 'home' : 'home-outline';
           } else if (rn === MAIN_SCREEN.SETTING) {
             iconName = focused ? 'settings' : 'settings-outline';
+          } else if (rn === MAIN_SCREEN.TODO) {
+            iconName = focused
+              ? 'ios-list-circle-sharp'
+              : 'ios-list-circle-outline';
           }
           return (
             <VectorIconComponent
@@ -49,6 +53,18 @@ export default function BottomTab() {
       <Tab.Screen
         name={MAIN_SCREEN.SETTING}
         component={Setting}
+        options={{
+          tabBarShowLabel: true,
+          tabBarLabelStyle: {
+            fontSize: AppStyles.fontSet.small,
+            color: AppStyles.colorSet.bgOrange,
+          },
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name={MAIN_SCREEN.TODO}
+        component={Todo}
         options={{
           tabBarShowLabel: true,
           tabBarLabelStyle: {

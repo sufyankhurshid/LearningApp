@@ -28,6 +28,7 @@ const metrics = {
   fourHundred: 400,
   fourFifty: 450,
   fiveHundred: 500,
+  fiveEighty: 580,
   sixHundred: 600,
   ninety: 90,
   doubleSection: 50,

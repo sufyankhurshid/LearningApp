@@ -1,5 +1,6 @@
 import {
   ADD_LOGIN_STATUS_CODE,
+  ADD_TODO_TASK,
   ADD_USER_CODE,
   BLOCK_USER,
   CREATE_USER_POST,
@@ -157,6 +158,15 @@ export const addLoginStatusCode = code => {
     return dispatch({
       type: ADD_LOGIN_STATUS_CODE,
       payload: code,
+    });
+  };
+};
+
+export const addTodoTask = task => {
+  return dispatch => {
+    return dispatch({
+      type: ADD_TODO_TASK,
+      payload: task,
     });
   };
 };

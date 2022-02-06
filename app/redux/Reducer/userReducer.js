@@ -1,5 +1,6 @@
 import {
   ADD_LOGIN_STATUS_CODE,
+  ADD_TODO_TASK,
   ADD_USER_CODE,
   BLOCK_USER,
   CREATE_USER_POST,
@@ -27,6 +28,7 @@ const INITIAL_STATE = {
   blockUsers: [],
   loginStatus: {},
   fetchUserPost: [],
+  todoTask: {},
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -69,7 +71,6 @@ export default (state = INITIAL_STATE, action) => {
       const newArray = state?.users?.filter(
         user => user?.id !== action?.payload,
       );
-      printLogs({newArray});
       return {
         ...state,
         users: newArray,
@@ -192,6 +193,18 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         loginStatus: {...state?.loginStatus, userCode: action?.payload?.code},
+      };
+    }
+
+    case ADD_TODO_TASK: {
+      const {task, date} = action.payload;
+      printLogs({task, date});
+      const oldTask = state.todoTask[date] || [];
+      const newTask = [...oldTask, task];
+      const newTodoTask = {...state.todoTask, [date]: newTask};
+      return {
+        ...state,
+        todoTask: newTodoTask,
       };
     }
 
